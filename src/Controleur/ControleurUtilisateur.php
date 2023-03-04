@@ -29,7 +29,6 @@ class ControleurUtilisateur extends ControleurGenerique
             } else {
                 $loginHTML = htmlspecialchars($utilisateur->getLogin());
                 $publications = (new PublicationRepository())->getAllFrom($idUser);
-                $utilisateur = (new UtilisateurRepository())->get($idUser);
                 ControleurUtilisateur::afficherVue('vueGenerale.php', [
                     "publications" => $publications,
                     "pagetitle" => "Page de $loginHTML",
@@ -105,7 +104,7 @@ class ControleurUtilisateur extends ControleurGenerique
             $pictureName = uniqid() . '.' . $fileExtension;
             $from = $profilePicture['tmp_name'];
             $to = __DIR__ . "/../../web/assets/img/utilisateurs/$pictureName";
-            move_uploaded_file($profilePicture['tmp_name'], __DIR__ . "/../../web/assets/img/utilisateurs/$pictureName");
+            move_uploaded_file($from, $to);
 
             $utilisateur = Utilisateur::create($login, $passwordChiffre, $adresseMail, $pictureName);
             $utilisateurRepository->create($utilisateur);
