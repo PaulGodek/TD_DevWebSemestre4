@@ -26,14 +26,17 @@ class ControleurPublication extends ControleurGenerique
         $idUtilisateurConnecte = ConnexionUtilisateur::getIdUtilisateurConnecte();
         $utilisateur = (new UtilisateurRepository())->get($idUtilisateurConnecte);
 
+        if ($utilisateur == null) {
+            MessageFlash::ajouter("error", "Il faut être connecté pour publier un feed");
+            return ControleurPublication::rediriger('connecter');
+        }
+        
         $message = $_POST['message'];
         if ($message == null || $message == "") {
-//            throw new ServiceException("Le message ne peut pas être vide!");
             MessageFlash::ajouter("error", "Le message ne peut pas être vide!");
             ControleurPublication::rediriger('publication', 'feed');
         }
         if (strlen($message) > 250) {
-//            throw new ServiceException("Le message ne peut pas dépasser 250 caractères!");
             MessageFlash::ajouter("error", "Le message ne peut pas dépasser 250 caractères!");
             ControleurPublication::rediriger('publication', 'feed');
         }
