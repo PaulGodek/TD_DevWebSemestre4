@@ -20,15 +20,15 @@ class ControleurUtilisateur extends ControleurGenerique
 
     public static function afficherPublications(): void
     {
-        if (isset($_REQUEST['idUser'])) {
-            $idUser = $_REQUEST['idUser'];
-            $utilisateur = (new UtilisateurRepository())->recupererParClePrimaire($idUser);
+        if (isset($_REQUEST['idUtilisateur'])) {
+            $idUtilisateur = $_REQUEST['idUtilisateur'];
+            $utilisateur = (new UtilisateurRepository())->recupererParClePrimaire($idUtilisateur);
             if ($utilisateur === null) {
                 MessageFlash::ajouter("error", "Login inconnu.");
                 ControleurUtilisateur::rediriger("publication", "afficherListe");
             } else {
                 $loginHTML = htmlspecialchars($utilisateur->getLogin());
-                $publications = (new PublicationRepository())->recupererParAuteur($idUser);
+                $publications = (new PublicationRepository())->recupererParAuteur($idUtilisateur);
                 ControleurUtilisateur::afficherVue('vueGenerale.php', [
                     "publications" => $publications,
                     "pagetitle" => "Page de $loginHTML",

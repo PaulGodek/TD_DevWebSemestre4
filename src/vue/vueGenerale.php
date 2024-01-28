@@ -32,7 +32,7 @@ use TheFeed\Lib\ConnexionUtilisateur;
                 } else {
                     $idUtilisateurURL = rawurlencode(ConnexionUtilisateur::getIdUtilisateurConnecte());
                 ?>
-                    <a href="controleurFrontal.php?action=afficherPublications&controleur=utilisateur&idUser=<?= $idUtilisateurURL ?>">Ma
+                    <a href="controleurFrontal.php?action=afficherPublications&controleur=utilisateur&idUtilisateur=<?= $idUtilisateurURL ?>">Ma
                         page</a>
                     <a href="controleurFrontal.php?action=deconnecter&controleur=utilisateur">Déconnexion</a>
                 <?php } ?>

@@ -37,6 +37,6 @@ if (class_exists($controleurClassName)) {
         $controleurClassName::afficherErreur("Erreur d'action");
     }
 } else {
-    TheFeed\Controleur\ControleurGenerique::afficherErreur("Erreur de contrôleur");
+    \TheFeed\Controleur\ControleurGenerique::afficherErreur("Erreur de contrôleur");
 }
 

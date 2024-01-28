@@ -32,7 +32,7 @@ use TheFeed\Modele\DataObject\Publication;
             ?>
                 <div class="feedy">
                     <div class="feedy-header">
-                        <a href="controleurFrontal.php?controleur=utilisateur&action=afficherPublications&idUser=<?= $publication->getAuteur()->getIdUtilisateur() ?>">
+                        <a href="controleurFrontal.php?controleur=utilisateur&action=afficherPublications&idUtilisateur=<?= $publication->getAuteur()->getIdUtilisateur() ?>">
                             <img class="avatar" src="../ressources/img/utilisateurs/<?= $publication->getAuteur()->getNomPhotoDeProfil() ?>" alt="avatar de l'utilisateur">
                         </a>
                         <div class="feedy-info">
