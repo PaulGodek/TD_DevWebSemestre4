@@ -65,7 +65,7 @@ class ControleurUtilisateur extends ControleurGenerique
                 MessageFlash::ajouter("error", "Le login doit être compris entre 4 et 20 caractères!");
                 ControleurUtilisateur::rediriger("utilisateur", "afficherFormulaireCreation");
             }
-            if (!preg_match("#^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,20}$#", $motDePasse)) {
+            if (!preg_match("#^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,20}$#", $motDePasse)) {
                 MessageFlash::ajouter("error", "Mot de passe invalide!");
                 ControleurUtilisateur::rediriger("utilisateur", "afficherFormulaireCreation");
             }
@@ -128,7 +128,7 @@ class ControleurUtilisateur extends ControleurGenerique
 
     public static function connecter(): void
     {
-        if (!(isset($_POST['login']) && isset($_POST['motDePasse']))) {
+        if (!(isset($_POST['login']) && isset($_POST['mot-de-passe']))) {
             MessageFlash::ajouter("error", "Login ou mot de passe manquant.");
             ControleurUtilisateur::rediriger("utilisateur", "afficherFormulaireConnexion");
         }
@@ -141,7 +141,7 @@ class ControleurUtilisateur extends ControleurGenerique
             ControleurUtilisateur::rediriger("utilisateur", "afficherFormulaireConnexion");
         }
 
-        if (!MotDePasse::verifier($_POST["motDePasse"], $utilisateur->getMdpHache())) {
+        if (!MotDePasse::verifier($_POST["mot-de-passe"], $utilisateur->getMdpHache())) {
             MessageFlash::ajouter("error", "Mot de passe incorrect.");
             ControleurUtilisateur::rediriger("utilisateur", "afficherFormulaireConnexion");
         }

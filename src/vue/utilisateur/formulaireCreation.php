@@ -16,7 +16,7 @@
         <div class="access-container">
             <label for="password">Mot de passe</label>
             <p class="help-input-form">Entre 8 et 20 caractères, au moins une minuscule, une majuscule et un nombre</p>
-            <input id="password" type="password" name="mot-de-passe" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,20}$" required/>
+            <input id="password" type="password" name="mot-de-passe" pattern="#^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,20}$#"" required/>
         </div>
         <div class="access-container">
             <label for="mail">Adresse mail</label>
