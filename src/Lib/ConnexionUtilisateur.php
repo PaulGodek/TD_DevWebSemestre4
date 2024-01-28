@@ -11,7 +11,6 @@ class ConnexionUtilisateur
     private static string $cleConnexion = "_utilisateurConnecte";
 
     // Note : Classe trop couplée avec les sessions
-    // TODO : Découpler avec un autre exemple de stockage (cookie via JWT ?)
     public static function connecter(string $idUtilisateur): void
     {
         $session = Session::getInstance();

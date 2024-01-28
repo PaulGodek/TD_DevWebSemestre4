@@ -8,7 +8,7 @@
         </div>
         <div class="access-container">
             <label for="password">Mot de passe</label>
-            <input id="password" type="password" name="password" required/>
+            <input id="password" type="password" name="mot-de-passe" required/>
         </div>
         <input id="access-submit" type="submit" value="Se connecter">
     </fieldset>

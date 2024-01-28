@@ -13,22 +13,22 @@ use TheFeed\Modele\Repository\UtilisateurRepository;
 class ControleurUtilisateur extends ControleurGenerique
 {
 
-    public static function afficherErreur($errorMessage = "", $controleur = ""): void
+    public static function afficherErreur($messageErreur = "", $controleur = ""): void
     {
-        parent::afficherErreur($errorMessage, "utilisateur");
+        parent::afficherErreur($messageErreur, "utilisateur");
     }
 
-    public static function pagePerso(): void
+    public static function afficherPublications(): void
     {
         if (isset($_REQUEST['idUser'])) {
             $idUser = $_REQUEST['idUser'];
-            $utilisateur = (new UtilisateurRepository())->get($idUser);
+            $utilisateur = (new UtilisateurRepository())->recupererParClePrimaire($idUser);
             if ($utilisateur === null) {
                 MessageFlash::ajouter("error", "Login inconnu.");
-                ControleurUtilisateur::rediriger("publication", "feed");
+                ControleurUtilisateur::rediriger("publication", "afficherListe");
             } else {
                 $loginHTML = htmlspecialchars($utilisateur->getLogin());
-                $publications = (new PublicationRepository())->getAllFrom($idUser);
+                $publications = (new PublicationRepository())->recupererParAuteur($idUser);
                 ControleurUtilisateur::afficherVue('vueGenerale.php', [
                     "publications" => $publications,
                     "pagetitle" => "Page de $loginHTML",
@@ -37,7 +37,7 @@ class ControleurUtilisateur extends ControleurGenerique
             }
         } else {
             MessageFlash::ajouter("error", "Login manquant.");
-            ControleurUtilisateur::rediriger("publication", "feed");
+            ControleurUtilisateur::rediriger("publication", "afficherListe");
         }
     }
 
@@ -53,19 +53,19 @@ class ControleurUtilisateur extends ControleurGenerique
     public static function creerDepuisFormulaire(): void
     {
         if (
-            isset($_POST['login']) && isset($_POST['password']) && isset($_POST['adresseMail'])
-            && isset($_FILES['profilePicture'])
+            isset($_POST['login']) && isset($_POST['mot-de-passe']) && isset($_POST['email'])
+            && isset($_FILES['nom-photo-de-profil'])
         ) {
             $login = $_POST['login'];
-            $password = $_POST['password'];
-            $adresseMail = $_POST['adresseMail'];
-            $profilePicture = $_FILES['profilePicture'];
+            $motDePasse = $_POST['mot-de-passe'];
+            $adresseMail = $_POST['email'];
+            $nomPhotoDeProfil = $_FILES['nom-photo-de-profil'];
 
             if (strlen($login) < 4 || strlen($login) > 20) {
                 MessageFlash::ajouter("error", "Le login doit être compris entre 4 et 20 caractères!");
                 ControleurUtilisateur::rediriger("utilisateur", "afficherFormulaireCreation");
             }
-            if (!preg_match("#^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,20}$#", $password)) {
+            if (!preg_match("#^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,20}$#", $motDePasse)) {
                 MessageFlash::ajouter("error", "Mot de passe invalide!");
                 ControleurUtilisateur::rediriger("utilisateur", "afficherFormulaireCreation");
             }
@@ -75,26 +75,26 @@ class ControleurUtilisateur extends ControleurGenerique
             }
 
             $utilisateurRepository = new UtilisateurRepository();
-            $utilisateur = $utilisateurRepository->getByLogin($login);
+            $utilisateur = $utilisateurRepository->recupererParLogin($login);
             if ($utilisateur != null) {
                 MessageFlash::ajouter("error", "Ce login est déjà pris!");
                 ControleurUtilisateur::rediriger("utilisateur", "afficherFormulaireCreation");
             }
 
-            $utilisateur = $utilisateurRepository->getByAdresseMail($adresseMail);
+            $utilisateur = $utilisateurRepository->recupererParEmail($adresseMail);
             if ($utilisateur != null) {
                 MessageFlash::ajouter("error", "Un compte est déjà enregistré avec cette adresse mail!");
                 ControleurUtilisateur::rediriger("utilisateur", "afficherFormulaireCreation");
             }
 
-            $passwordChiffre = MotDePasse::hacher($password);
+            $mdpHache = MotDePasse::hacher($motDePasse);
 
             // Upload des photos de profil
             // Plus d'informations :
             // http://romainlebreton.github.io/R3.01-DeveloppementWeb/assets/tut4-complement.html
 
             // On récupère l'extension du fichier
-            $explosion = explode('.', $profilePicture['name']);
+            $explosion = explode('.', $nomPhotoDeProfil['name']);
             $fileExtension = end($explosion);
             if (!in_array($fileExtension, ['png', 'jpg', 'jpeg'])) {
                 MessageFlash::ajouter("error", "La photo de profil n'est pas au bon format!");
@@ -102,15 +102,15 @@ class ControleurUtilisateur extends ControleurGenerique
             }
             // La photo de profil sera enregistrée avec un nom de fichier aléatoire
             $pictureName = uniqid() . '.' . $fileExtension;
-            $from = $profilePicture['tmp_name'];
-            $to = __DIR__ . "/../../web/assets/img/utilisateurs/$pictureName";
+            $from = $nomPhotoDeProfil['tmp_name'];
+            $to = __DIR__ . "/../../ressources/img/utilisateurs/$pictureName";
             move_uploaded_file($from, $to);
 
-            $utilisateur = Utilisateur::create($login, $passwordChiffre, $adresseMail, $pictureName);
-            $utilisateurRepository->create($utilisateur);
+            $utilisateur = Utilisateur::create($login, $mdpHache, $adresseMail, $pictureName);
+            $utilisateurRepository->ajouter($utilisateur);
 
             MessageFlash::ajouter("success", "L'utilisateur a bien été créé !");
-            ControleurUtilisateur::rediriger("publication", "feed");
+            ControleurUtilisateur::rediriger("publication", "afficherListe");
         } else {
             MessageFlash::ajouter("error", "Login, nom, prenom ou mot de passe manquant.");
             ControleurUtilisateur::rediriger("utilisateur", "afficherFormulaireCreation");
@@ -128,37 +128,37 @@ class ControleurUtilisateur extends ControleurGenerique
 
     public static function connecter(): void
     {
-        if (!(isset($_POST['login']) && isset($_POST['password']))) {
+        if (!(isset($_POST['login']) && isset($_POST['motDePasse']))) {
             MessageFlash::ajouter("error", "Login ou mot de passe manquant.");
             ControleurUtilisateur::rediriger("utilisateur", "afficherFormulaireConnexion");
         }
         $utilisateurRepository = new UtilisateurRepository();
         /** @var Utilisateur $utilisateur */
-        $utilisateur = $utilisateurRepository->getByLogin($_POST["login"]);
+        $utilisateur = $utilisateurRepository->recupererParLogin($_POST["login"]);
 
         if ($utilisateur == null) {
             MessageFlash::ajouter("error", "Login inconnu.");
             ControleurUtilisateur::rediriger("utilisateur", "afficherFormulaireConnexion");
         }
 
-        if (!MotDePasse::verifier($_POST["password"], $utilisateur->getPassword())) {
+        if (!MotDePasse::verifier($_POST["motDePasse"], $utilisateur->getMdpHache())) {
             MessageFlash::ajouter("error", "Mot de passe incorrect.");
             ControleurUtilisateur::rediriger("utilisateur", "afficherFormulaireConnexion");
         }
 
         ConnexionUtilisateur::connecter($utilisateur->getIdUtilisateur());
         MessageFlash::ajouter("success", "Connexion effectuée.");
-        ControleurUtilisateur::rediriger("publication", "feed");
+        ControleurUtilisateur::rediriger("publication", "afficherListe");
     }
 
     public static function deconnecter(): void
     {
         if (!ConnexionUtilisateur::estConnecte()) {
             MessageFlash::ajouter("error", "Utilisateur non connecté.");
-            ControleurUtilisateur::rediriger("publication", "feed");
+            ControleurUtilisateur::rediriger("publication", "afficherListe");
         }
         ConnexionUtilisateur::deconnecter();
         MessageFlash::ajouter("success", "L'utilisateur a bien été déconnecté.");
-        ControleurUtilisateur::rediriger("publication", "feed");
+        ControleurUtilisateur::rediriger("publication", "afficherListe");
     }
 }

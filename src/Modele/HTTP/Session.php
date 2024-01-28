@@ -11,7 +11,6 @@ class Session
 
     private function __construct()
     {
-        // session_set_cookie_params($dureeExpiration);
         if (session_start() === false) {
             throw new Exception("La session n'a pas réussi à démarrer.");
         }

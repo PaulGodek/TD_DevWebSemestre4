@@ -12,9 +12,9 @@ class PublicationRepository
      * @return Publication[]
      * @throws \Exception
      */
-    public function getAll(): array
+    public function recuperer(): array
     {
-        $statement = ConnexionBaseDeDonnees::getPdo()->prepare("SELECT idPublication, message, date, idUtilisateur, login, profilePictureName
+        $statement = ConnexionBaseDeDonnees::getPdo()->prepare("SELECT idPublication, message, date, idUtilisateur, login, nomPhotoDeProfil
                                                 FROM publications p
                                                 JOIN utilisateurs u on p.idAuteur = u.idUtilisateur
                                                 ORDER BY date DESC");
@@ -30,7 +30,7 @@ class PublicationRepository
             $utilisateur = new Utilisateur();
             $utilisateur->setIdUtilisateur($data["idUtilisateur"]);
             $utilisateur->setLogin($data["login"]);
-            $utilisateur->setProfilePictureName($data["profilePictureName"]);
+            $utilisateur->setNomPhotoDeProfil($data["nomPhotoDeProfil"]);
             $publication->setAuteur($utilisateur);
             $publications[] = $publication;
         }
@@ -39,16 +39,16 @@ class PublicationRepository
     }
 
     /**
-     * @param $idUtilisateut
+     * @param $idUtilisateur
      * @return Publication[]
      * @throws \Exception
      */
-    public function getAllFrom($idUtilisateut): array
+    public function recupererParAuteur($idUtilisateur): array
     {
         $values = [
-            "idAuteur" => $idUtilisateut,
+            "idAuteur" => $idUtilisateur,
         ];
-        $statement = ConnexionBaseDeDonnees::getPdo()->prepare("SELECT idPublication, message, date, idUtilisateur, login, profilePictureName
+        $statement = ConnexionBaseDeDonnees::getPdo()->prepare("SELECT idPublication, message, date, idUtilisateur, login, nomPhotoDeProfil
                                                 FROM publications p
                                                 JOIN utilisateurs u on p.idAuteur = u.idUtilisateur
                                                 WHERE idAuteur = :idAuteur
@@ -65,7 +65,7 @@ class PublicationRepository
             $utilisateur = new Utilisateur();
             $utilisateur->setIdUtilisateur($data["idUtilisateur"]);
             $utilisateur->setLogin($data["login"]);
-            $utilisateur->setProfilePictureName($data["profilePictureName"]);
+            $utilisateur->setNomPhotoDeProfil($data["nomPhotoDeProfil"]);
             $publi->setAuteur($utilisateur);
             $publis[] = $publi;
         }
@@ -73,7 +73,7 @@ class PublicationRepository
         return $publis;
     }
 
-    public function create(Publication $publication)
+    public function ajouter(Publication $publication)
     {
         $values = [
             "message" => $publication->getMessage(),
@@ -86,12 +86,12 @@ class PublicationRepository
         return $pdo->lastInsertId();
     }
 
-    public function get($id) : ?Publication
+    public function recupererParClePrimaire($id) : ?Publication
     {
         $values = [
             "idPublication" => $id,
         ];
-        $statement = ConnexionBaseDeDonnees::getPdo()->prepare("SELECT idPublication, message, date, idUtilisateur, login, profilePictureName
+        $statement = ConnexionBaseDeDonnees::getPdo()->prepare("SELECT idPublication, message, date, idUtilisateur, login, nomPhotoDeProfil
                                                 FROM publications p
                                                 JOIN utilisateurs u on p.idAuteur = u.idUtilisateur
                                                 WHERE idPublication = :idPublication");
@@ -105,14 +105,14 @@ class PublicationRepository
             $utilisateur = new Utilisateur();
             $utilisateur->setIdUtilisateur($data["idUtilisateur"]);
             $utilisateur->setLogin($data["login"]);
-            $utilisateur->setProfilePictureName($data["profilePictureName"]);
+            $utilisateur->setNomPhotoDeProfil($data["nomPhotoDeProfil"]);
             $publication->setAuteur($utilisateur);
             return $publication;
         }
         return null;
     }
 
-    public function update(Publication $publication)
+    public function mettreAJour(Publication $publication)
     {
         $values = [
             "idPublication" => $publication->getIdPublication(),
@@ -122,7 +122,7 @@ class PublicationRepository
         $statement->execute($values);
     }
 
-    public function remove(Publication $publication)
+    public function supprimer(Publication $publication)
     {
         $values = [
             "idPublication" => $publication->getIdPublication(),

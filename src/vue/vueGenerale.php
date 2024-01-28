@@ -20,9 +20,9 @@ use TheFeed\Lib\ConnexionUtilisateur;
 <body>
     <header>
         <div id="titre" class="center">
-            <a href="controleurFrontal.php?controleur=publication&action=feed"><span>The Feed</span></a>
+            <a href="controleurFrontal.php?controleur=publication&action=afficherListe"><span>The Feed</span></a>
             <nav>
-                <a href="controleurFrontal.php?controleur=publication&action=feed">Accueil</a>
+                <a href="controleurFrontal.php?controleur=publication&action=afficherListe">Accueil</a>
                 <?php
                 if (!ConnexionUtilisateur::estConnecte()) {
                 ?>
@@ -32,7 +32,7 @@ use TheFeed\Lib\ConnexionUtilisateur;
                 } else {
                     $idUtilisateurURL = rawurlencode(ConnexionUtilisateur::getIdUtilisateurConnecte());
                 ?>
-                    <a href="controleurFrontal.php?action=pagePerso&controleur=utilisateur&idUser=<?= $idUtilisateurURL ?>">Ma
+                    <a href="controleurFrontal.php?action=afficherPublications&controleur=utilisateur&idUser=<?= $idUtilisateurURL ?>">Ma
                         page</a>
                     <a href="controleurFrontal.php?action=deconnecter&controleur=utilisateur">Déconnexion</a>
                 <?php } ?>

@@ -8,8 +8,19 @@ class ConfigurationBDDMySQL implements ConfigurationBDDInterface
 {
     private string $login = "";
     private string $motDePasse = "";
-    private string $nomBDD = ""; // Comme votre login
+
+    /** À l'IUT, vous avez une base de données nommée comme votre login
+     * @var string
+     */
+    private string $nomBDD = "";
     private string $hostname = "webinfo.iutmontp.univ-montp2.fr";
+
+
+    /** À l'IUT, le port de MySQL est particulier : 3316
+     * Ailleurs, on utilise le port par défaut : 3306
+     * @var string
+     */
+    private string  $port = '3316';
 
     public function getLogin(): string
     {
@@ -22,7 +33,7 @@ class ConfigurationBDDMySQL implements ConfigurationBDDInterface
     }
 
     public function getDSN() : string{
-        return "mysql:host={$this->hostname};dbname={$this->nomBDD}";
+        return "mysql:host={$this->hostname};port={$this->port};dbname={$this->nomBDD}";
     }
     public function getOptions() : array {
         // Option pour que toutes les chaines de caractères

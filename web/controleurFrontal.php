@@ -7,12 +7,13 @@ use TheFeed\Lib\Psr4AutoloaderClass;
 
 require_once __DIR__ . '/../src/Lib/Psr4AutoloaderClass.php';
 
-// instantiate the loader
-$loader = new Psr4AutoloaderClass();
-// register the base directories for the namespace prefix
-$loader->addNamespace('TheFeed', __DIR__ . '/../src');
-// register the autoloader
-$loader->register();
+
+// initialisation en désactivant l'affichage de débogage
+$chargeurDeClasse = new Psr4AutoloaderClass(false);
+$chargeurDeClasse->register();
+// enregistrement d'une association "espace de nom" → "dossier"
+$chargeurDeClasse->addNamespace('TheFeed', __DIR__ . '/../src');
+
 
 /////////////
 // Routage //
@@ -20,7 +21,7 @@ $loader->register();
 
 // Syntaxe alternative
 // The null coalescing operator returns its first operand if it exists and is not null
-$action = $_REQUEST['action'] ?? 'feed';
+$action = $_REQUEST['action'] ?? 'afficherListe';
 
 
 $controleur = "publication";

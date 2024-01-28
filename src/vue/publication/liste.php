@@ -12,7 +12,7 @@ use TheFeed\Modele\DataObject\Publication;
         <?php
         if (ConnexionUtilisateur::estConnecte()) {
         ?>
-            <form id="feedy-new" action="controleurFrontal.php?controleur=publication&action=submitFeedy" method="post">
+            <form id="feedy-new" action="controleurFrontal.php?controleur=publication&action=creerDepuisFormulaire" method="post">
                 <fieldset>
                     <legend>Nouveau feedy</legend>
                     <div>
@@ -32,8 +32,8 @@ use TheFeed\Modele\DataObject\Publication;
             ?>
                 <div class="feedy">
                     <div class="feedy-header">
-                        <a href="controleurFrontal.php?controleur=utilisateur&action=pagePerso&idUser=<?= $publication->getAuteur()->getIdUtilisateur() ?>">
-                            <img class="avatar" src="./assets/img/utilisateurs/<?= $publication->getAuteur()->getProfilePictureName() ?>" alt="avatar de l'utilisateur">
+                        <a href="controleurFrontal.php?controleur=utilisateur&action=afficherPublications&idUser=<?= $publication->getAuteur()->getIdUtilisateur() ?>">
+                            <img class="avatar" src="./assets/img/utilisateurs/<?= $publication->getAuteur()->getNomPhotoDeProfil() ?>" alt="avatar de l'utilisateur">
                         </a>
                         <div class="feedy-info">
                             <span><?= $loginHTML ?></span>

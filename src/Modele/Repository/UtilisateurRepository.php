@@ -11,7 +11,7 @@ class UtilisateurRepository
     /**
      * @return Utilisateur[]
      */
-    public function getAll(): array
+    public function recuperer(): array
     {
         $statement = ConnexionBaseDeDonnees::getPdo()->prepare("SELECT * FROM utilisateurs");
         $statement->execute();
@@ -22,73 +22,73 @@ class UtilisateurRepository
             $utilisateur = new Utilisateur();
             $utilisateur->setIdUtilisateur($data["idUtilisateur"]);
             $utilisateur->setLogin($data["login"]);
-            $utilisateur->setPassword($data["password"]);
-            $utilisateur->setAdresseMail($data["adresseMail"]);
-            $utilisateur->setProfilePictureName($data["profilePictureName"]);
+            $utilisateur->setMdpHache($data["mdpHache"]);
+            $utilisateur->setEmail($data["email"]);
+            $utilisateur->setNomPhotoDeProfil($data["nomPhotoDeProfil"]);
             $utilisateurs[] = $utilisateur;
         }
 
         return $utilisateurs;
     }
 
-    public function get($id): ?Utilisateur
+    public function recupererParClePrimaire($id): ?Utilisateur
     {
         $values = [
             "idUtilisateur" => $id,
         ];
         $statement = ConnexionBaseDeDonnees::getPdo()->prepare("SELECT * FROM utilisateurs WHERE idUtilisateur = :idUtilisateur");
-        return $this->extractUtilisateur($statement, $values);
+        return $this->extraireUtilisateur($statement, $values);
     }
 
-    public function getByLogin($login)
+    public function recupererParLogin($login)
     {
         $values = [
             "login" => $login,
         ];
         $statement = ConnexionBaseDeDonnees::getPdo()->prepare("SELECT * FROM utilisateurs WHERE login = :login");
-        return $this->extractUtilisateur($statement, $values);
+        return $this->extraireUtilisateur($statement, $values);
     }
 
-    public function getByAdresseMail($adresseMail)
+    public function recupererParEmail($email)
     {
         $values = [
-            "adresseMail" => $adresseMail,
+            "email" => $email,
         ];
-        $statement = ConnexionBaseDeDonnees::getPdo()->prepare("SELECT * FROM utilisateurs WHERE adresseMail = :adresseMail");
-        return $this->extractUtilisateur($statement, $values);
+        $statement = ConnexionBaseDeDonnees::getPdo()->prepare("SELECT * FROM utilisateurs WHERE email = :email");
+        return $this->extraireUtilisateur($statement, $values);
     }
 
-    public function create($entity)
+    public function ajouter($entite)
     {
         $values = [
-            "login" => $entity->getLogin(),
-            "password" => $entity->getPassword(),
-            "adresseMail" => $entity->getAdresseMail(),
-            "profilePictureName" => $entity->getProfilePictureName()
+            "login" => $entite->getLogin(),
+            "mdpHache" => $entite->getMdpHache(),
+            "email" => $entite->getEmail(),
+            "nomPhotoDeProfil" => $entite->getNomPhotoDeProfil()
         ];
         $pdo = ConnexionBaseDeDonnees::getPdo();
-        $statement = $pdo->prepare("INSERT INTO utilisateurs (login, password, adresseMail, profilePictureName) VALUES(:login, :password, :adresseMail, :profilePictureName);");
+        $statement = $pdo->prepare("INSERT INTO utilisateurs (login, mdpHache, email, nomPhotoDeProfil) VALUES(:login, :mdpHache, :email, :nomPhotoDeProfil);");
         $statement->execute($values);
         return $pdo->lastInsertId();
     }
 
-    public function update($entity)
+    public function mettreAJour($entite)
     {
         $values = [
-            "idUtilisateur" => $entity->getIdUtilisateur(),
-            "login" => $entity->getLogin(),
-            "password" => $entity->getPassword(),
-            "adresseMail" => $entity->getAdresseMail(),
-            "profilePictureName" => $entity->getProfilePictureName()
+            "idUtilisateur" => $entite->getIdUtilisateur(),
+            "login" => $entite->getLogin(),
+            "mdpHache" => $entite->getMdpHache(),
+            "email" => $entite->getEmail(),
+            "nomPhotoDeProfil" => $entite->getNomPhotoDeProfil()
         ];
-        $statement = ConnexionBaseDeDonnees::getPdo()->prepare("UPDATE utilisateurs SET login = :login, password = :password, adresseMail = :adresseMail, profilePictureName = :profilePictureName WHERE idUtilisateur = :idUtilisateur;");
+        $statement = ConnexionBaseDeDonnees::getPdo()->prepare("UPDATE utilisateurs SET login = :login, mdpHache = :mdpHache, email = :email, nomPhotoDeProfil = :nomPhotoDeProfil WHERE idUtilisateur = :idUtilisateur;");
         $statement->execute($values);
     }
 
-    public function remove($entity)
+    public function supprimer($entite)
     {
         $values = [
-            "idUtilisateur" => $entity->getIdUtilisateur(),
+            "idUtilisateur" => $entite->getIdUtilisateur(),
         ];
         $statement = ConnexionBaseDeDonnees::getPdo()->prepare("DELETE FROM utilisateurs WHERE idUtilisateur = :idUtilisateur");
         $statement->execute($values);
@@ -99,7 +99,7 @@ class UtilisateurRepository
      * @param array $values
      * @return Utilisateur|void
      */
-    public function extractUtilisateur(PDOStatement $statement, array $values)
+    public function extraireUtilisateur(PDOStatement $statement, array $values)
     {
         $statement->execute($values);
         $data = $statement->fetch();
@@ -107,9 +107,9 @@ class UtilisateurRepository
             $utilisateur = new Utilisateur();
             $utilisateur->setIdUtilisateur($data["idUtilisateur"]);
             $utilisateur->setLogin($data["login"]);
-            $utilisateur->setPassword($data["password"]);
-            $utilisateur->setAdresseMail($data["adresseMail"]);
-            $utilisateur->setProfilePictureName($data["profilePictureName"]);
+            $utilisateur->setMdpHache($data["mdpHache"]);
+            $utilisateur->setEmail($data["email"]);
+            $utilisateur->setNomPhotoDeProfil($data["nomPhotoDeProfil"]);
             return $utilisateur;
         }
     }

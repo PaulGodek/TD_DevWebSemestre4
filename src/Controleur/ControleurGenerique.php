@@ -24,8 +24,8 @@ class ControleurGenerique {
             $queryString[] = "controleur=" . rawurlencode($controleur);
         }
         foreach ($query as $name => $value) {
-            $name = rawurldecode($name);
-            $value = rawurldecode($value);
+            $name = rawurlencode($name);
+            $value = rawurlencode($value);
             $queryString[] = "$name=$value";
         }
         $url = "Location: ./controleurFrontal.php?" . join("&", $queryString);
@@ -33,18 +33,18 @@ class ControleurGenerique {
         exit();
     }
 
-    public static function afficherErreur($errorMessage = "", $controleur = ""): void
+    public static function afficherErreur($messageErreur = "", $controleur = ""): void
     {
-        $errorMessageView = "Problème";
+        $messageErreurVue = "Problème";
         if ($controleur !== "")
-            $errorMessageView .= " avec le contrôleur $controleur";
-        if ($errorMessage !== "")
-            $errorMessageView .= " : $errorMessage";
+            $messageErreurVue .= " avec le contrôleur $controleur";
+        if ($messageErreur !== "")
+            $messageErreurVue .= " : $messageErreur";
 
         ControleurGenerique::afficherVue('vueGenerale.php', [
             "pagetitle" => "Problème",
             "cheminVueBody" => "erreur.php",
-            "errorMessage" => $errorMessageView
+            "errorMessage" => $messageErreurVue
         ]);
     }
 

@@ -8,26 +8,25 @@ class Utilisateur
 
     private int $idUtilisateur;
     private string $login;
-    //Chiffré
-    private string $password;
-    private string $adresseMail;
-    private string $profilePictureName;
+    private string $mdpHache;
+    private string $email;
+    private string $nomPhotoDeProfil;
 
     public function __construct()
     {
     }
 
     public static function create(string $login,
-                                  string $passwordChiffre,
-                                  string $addresseMail,
-                                  string $profilePictureName
+                                  string $mdpHache,
+                                  string $email,
+                                  string $nomPhotoDeProfil
     ): Utilisateur
     {
         $utilisateur = new Utilisateur();
         $utilisateur->setLogin($login);
-        $utilisateur->setPassword($passwordChiffre);
-        $utilisateur->setAdresseMail($addresseMail);
-        $utilisateur->setProfilePictureName($profilePictureName);
+        $utilisateur->setMdpHache($mdpHache);
+        $utilisateur->setEmail($email);
+        $utilisateur->setNomPhotoDeProfil($nomPhotoDeProfil);
         return $utilisateur;
     }
 
@@ -41,19 +40,19 @@ class Utilisateur
         return $this->login;
     }
 
-    public function getPassword(): string
+    public function getMdpHache(): string
     {
-        return $this->password;
+        return $this->mdpHache;
     }
 
-    public function getAdresseMail(): string
+    public function getEmail(): string
     {
-        return $this->adresseMail;
+        return $this->email;
     }
 
-    public function getProfilePictureName(): string
+    public function getNomPhotoDeProfil(): string
     {
-        return $this->profilePictureName;
+        return $this->nomPhotoDeProfil;
     }
 
     public function setIdUtilisateur($idUtilisateur): void
@@ -66,18 +65,18 @@ class Utilisateur
         $this->login = $login;
     }
 
-    public function setPassword($password): void
+    public function setMdpHache($mdpHache): void
     {
-        $this->password = $password;
+        $this->mdpHache = $mdpHache;
     }
 
-    public function setAdresseMail($adresseMail): void
+    public function setEmail($email): void
     {
-        $this->adresseMail = $adresseMail;
+        $this->email = $email;
     }
 
-    public function setProfilePictureName($profilePictureName): void
+    public function setNomPhotoDeProfil($nomPhotoDeProfil): void
     {
-        $this->profilePictureName = $profilePictureName;
+        $this->nomPhotoDeProfil = $nomPhotoDeProfil;
     }
 }
