@@ -14,7 +14,7 @@ use TheFeed\Lib\ConnexionUtilisateur;
 <head>
     <title><?= $pagetitle ?></title>
     <meta charset="utf-8">
-    <link rel="stylesheet" href="./assets/css/styles.css">
+    <link rel="stylesheet" href="../ressources/css/styles.css">
 </head>
 
 <body>
