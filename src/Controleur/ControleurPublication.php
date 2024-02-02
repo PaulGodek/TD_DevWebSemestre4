@@ -11,7 +11,7 @@ use TheFeed\Modele\Repository\UtilisateurRepository;
 class ControleurPublication extends ControleurGenerique
 {
 
-    public static function afficherListe()
+    public static function afficherListe(): void
     {
         $publications = (new PublicationRepository())->recuperer();
         ControleurUtilisateur::afficherVue('vueGenerale.php', [
@@ -21,7 +21,7 @@ class ControleurPublication extends ControleurGenerique
         ]);
     }
 
-    public static function creerDepuisFormulaire()
+    public static function creerDepuisFormulaire(): void
     {
         $idUtilisateurConnecte = ConnexionUtilisateur::getIdUtilisateurConnecte();
         $utilisateur = (new UtilisateurRepository())->recupererParClePrimaire($idUtilisateurConnecte);
