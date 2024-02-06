@@ -14,22 +14,16 @@ class ControleurGenerique {
     }
 
     // https://stackoverflow.com/questions/768431/how-do-i-make-a-redirect-in-php
-    protected static function rediriger(string $controleur = "", string $action = "", array $query = []): void
+    protected static function rediriger(string $controleur = "", string $action = ""): void
     {
-        $queryString = [];
-        if ($action != "") {
-            $queryString[] = "action=" . rawurlencode($action);
-        }
-        if ($controleur != "") {
-            $queryString[] = "controleur=" . rawurlencode($controleur);
-        }
-        foreach ($query as $name => $value) {
-            $name = rawurlencode($name);
-            $value = rawurlencode($value);
-            $queryString[] = "$name=$value";
-        }
-        $url = "Location: ./controleurFrontal.php?" . join("&", $queryString);
-        header($url);
+        $controleurURL = rawurlencode($controleur);
+        $actionURL = rawurlencode($action);
+        $url = "./controleurFrontal.php?controleur=$controleurURL&action=$actionURL";
+
+        // L'en-tête 'Location' permet d'effectuer une redirection
+        // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Location
+        $header = "Location: $url";
+        header($header);
         exit();
     }
 
