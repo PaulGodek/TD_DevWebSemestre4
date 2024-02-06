@@ -16,10 +16,10 @@ class Utilisateur
     {
     }
 
-    public static function create(string $login,
-                                  string $mdpHache,
-                                  string $email,
-                                  string $nomPhotoDeProfil
+    public static function construire(string $login,
+                                      string $mdpHache,
+                                      string $email,
+                                      string $nomPhotoDeProfil
     ): Utilisateur
     {
         $utilisateur = new Utilisateur();

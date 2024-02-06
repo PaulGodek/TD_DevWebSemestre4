@@ -41,7 +41,7 @@ class ControleurPublication extends ControleurGenerique
             ControleurPublication::rediriger('publication', 'afficherListe');
         }
 
-        $publication = Publication::create($message, $utilisateur);
+        $publication = Publication::construire($message, $utilisateur);
         (new PublicationRepository())->ajouter($publication);
 
         ControleurPublication::rediriger('publication', 'afficherListe');

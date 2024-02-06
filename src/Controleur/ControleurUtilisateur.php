@@ -106,7 +106,7 @@ class ControleurUtilisateur extends ControleurGenerique
             $to = __DIR__ . "/../../ressources/img/utilisateurs/$pictureName";
             move_uploaded_file($from, $to);
 
-            $utilisateur = Utilisateur::create($login, $mdpHache, $adresseMail, $pictureName);
+            $utilisateur = Utilisateur::construire($login, $mdpHache, $adresseMail, $pictureName);
             $utilisateurRepository->ajouter($utilisateur);
 
             MessageFlash::ajouter("success", "L'utilisateur a bien été créé !");

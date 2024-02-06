@@ -12,7 +12,7 @@ class Publication
     private DateTime $date;
     private Utilisateur $auteur;
 
-    public static function create(string $message, Utilisateur $auteur) : Publication {
+    public static function construire(string $message, Utilisateur $auteur) : Publication {
         $publication = new Publication();
         $publication->message = $message;
         $publication->date = new DateTime();
