@@ -58,7 +58,7 @@ class ControleurUtilisateur extends ControleurGenerique
         ) {
             $login = $_POST['login'];
             $motDePasse = $_POST['mot-de-passe'];
-            $adresseMail = $_POST['email'];
+            $email = $_POST['email'];
             $donneesPhotoDeProfil = $_FILES['donnees-photo-de-profil'];
 
             if (strlen($login) < 4 || strlen($login) > 20) {
@@ -69,7 +69,7 @@ class ControleurUtilisateur extends ControleurGenerique
                 MessageFlash::ajouter("error", "Mot de passe invalide!");
                 ControleurUtilisateur::rediriger("utilisateur", "afficherFormulaireCreation");
             }
-            if (!filter_var($adresseMail, FILTER_VALIDATE_EMAIL)) {
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 MessageFlash::ajouter("error", "L'adresse mail est incorrecte!");
                 ControleurUtilisateur::rediriger("utilisateur", "afficherFormulaireCreation");
             }
@@ -81,7 +81,7 @@ class ControleurUtilisateur extends ControleurGenerique
                 ControleurUtilisateur::rediriger("utilisateur", "afficherFormulaireCreation");
             }
 
-            $utilisateur = $utilisateurRepository->recupererParEmail($adresseMail);
+            $utilisateur = $utilisateurRepository->recupererParEmail($email);
             if ($utilisateur != null) {
                 MessageFlash::ajouter("error", "Un compte est déjà enregistré avec cette adresse mail!");
                 ControleurUtilisateur::rediriger("utilisateur", "afficherFormulaireCreation");
@@ -95,18 +95,18 @@ class ControleurUtilisateur extends ControleurGenerique
 
             // On récupère l'extension du fichier
             $explosion = explode('.', $donneesPhotoDeProfil['name']);
-            $fileExtension = end($explosion);
-            if (!in_array($fileExtension, ['png', 'jpg', 'jpeg'])) {
+            $extensionFichier = end($explosion);
+            if (!in_array($extensionFichier, ['png', 'jpg', 'jpeg'])) {
                 MessageFlash::ajouter("error", "La photo de profil n'est pas au bon format!");
                 ControleurUtilisateur::rediriger("utilisateur", "afficherFormulaireCreation");
             }
             // La photo de profil sera enregistrée avec un nom de fichier aléatoire
-            $pictureName = uniqid() . '.' . $fileExtension;
-            $from = $donneesPhotoDeProfil['tmp_name'];
-            $to = __DIR__ . "/../../ressources/img/utilisateurs/$pictureName";
-            move_uploaded_file($from, $to);
+            $nomFichierPhoto = uniqid() . '.' . $extensionFichier;
+            $source = $donneesPhotoDeProfil['tmp_name'];
+            $destination = __DIR__ . "/../../ressources/img/utilisateurs/$nomFichierPhoto";
+            move_uploaded_file($source, $destination);
 
-            $utilisateur = Utilisateur::construire($login, $mdpHache, $adresseMail, $pictureName);
+            $utilisateur = Utilisateur::construire($login, $mdpHache, $email, $nomFichierPhoto);
             $utilisateurRepository->ajouter($utilisateur);
 
             MessageFlash::ajouter("success", "L'utilisateur a bien été créé !");
