@@ -24,7 +24,7 @@
         </div>
         <div class="access-container">
             <label for="profile-pic">Photo de profil</label>
-            <input required type="file" id="profile-pic" name="nom-photo-de-profil" accept="image/png, image/jpeg">
+            <input required type="file" id="profile-pic" name="donnees-photo-de-profil" accept="image/png, image/jpeg">
         </div>
         <input id="access-submit" type="submit" value="S'inscrire">
     </fieldset>

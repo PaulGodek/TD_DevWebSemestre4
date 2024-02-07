@@ -54,12 +54,12 @@ class ControleurUtilisateur extends ControleurGenerique
     {
         if (
             isset($_POST['login']) && isset($_POST['mot-de-passe']) && isset($_POST['email'])
-            && isset($_FILES['nom-photo-de-profil'])
+            && isset($_FILES['donnees-photo-de-profil'])
         ) {
             $login = $_POST['login'];
             $motDePasse = $_POST['mot-de-passe'];
             $adresseMail = $_POST['email'];
-            $nomPhotoDeProfil = $_FILES['nom-photo-de-profil'];
+            $donneesPhotoDeProfil = $_FILES['donnees-photo-de-profil'];
 
             if (strlen($login) < 4 || strlen($login) > 20) {
                 MessageFlash::ajouter("error", "Le login doit être compris entre 4 et 20 caractères!");
@@ -94,7 +94,7 @@ class ControleurUtilisateur extends ControleurGenerique
             // http://romainlebreton.github.io/R3.01-DeveloppementWeb/assets/tut4-complement.html
 
             // On récupère l'extension du fichier
-            $explosion = explode('.', $nomPhotoDeProfil['name']);
+            $explosion = explode('.', $donneesPhotoDeProfil['name']);
             $fileExtension = end($explosion);
             if (!in_array($fileExtension, ['png', 'jpg', 'jpeg'])) {
                 MessageFlash::ajouter("error", "La photo de profil n'est pas au bon format!");
@@ -102,7 +102,7 @@ class ControleurUtilisateur extends ControleurGenerique
             }
             // La photo de profil sera enregistrée avec un nom de fichier aléatoire
             $pictureName = uniqid() . '.' . $fileExtension;
-            $from = $nomPhotoDeProfil['tmp_name'];
+            $from = $donneesPhotoDeProfil['tmp_name'];
             $to = __DIR__ . "/../../ressources/img/utilisateurs/$pictureName";
             move_uploaded_file($from, $to);
 
