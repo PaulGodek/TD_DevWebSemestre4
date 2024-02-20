@@ -2,7 +2,6 @@
 
 namespace TheFeed\Modele\Repository;
 
-use TheFeed\Configuration\Configuration;
 use TheFeed\Configuration\ConfigurationBDDMySQL;
 use PDO;
 
@@ -19,8 +18,7 @@ class ConnexionBaseDeDonnees
 
     private function __construct()
     {
-        $configuration = new Configuration(new ConfigurationBDDMySQL());
-        $configurationBDD = $configuration->getConfigurationBDD();
+        $configurationBDD = new ConfigurationBDDMySQL();
 
         // Connexion à la base de données
         $this->pdo = new PDO(

@@ -6,16 +6,6 @@ class Configuration
 {
     public ConfigurationBDDInterface $configurationBDD;
 
-    public function __construct(ConfigurationBDDInterface $configurationBDD)
-    {
-        $this->configurationBDD= $configurationBDD;
-    }
-
-    public function getConfigurationBDD(): ConfigurationBDDInterface
-    {
-        return $this->configurationBDD;
-    }
-
     static public function getDebug(): bool
     {
         return true;
