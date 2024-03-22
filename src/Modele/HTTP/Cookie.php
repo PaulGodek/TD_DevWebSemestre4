@@ -11,11 +11,11 @@ class Cookie
 
     public static function enregistrer(string $cle, mixed $valeur, ?int $dureeExpiration = null): void
     {
-        $valeurJSON = serialize($valeur);
+        $valeurFormatTexte = serialize($valeur);
         if ($dureeExpiration === null)
-            setcookie($cle, $valeurJSON, 0);
+            setcookie($cle, $valeurFormatTexte, 0);
         else
-            setcookie($cle, $valeurJSON, time() + $dureeExpiration);
+            setcookie($cle, $valeurFormatTexte, time() + $dureeExpiration);
     }
 
     public static function lire(string $cle): mixed
