@@ -14,7 +14,7 @@ class ControleurPublication extends ControleurGenerique
     public static function afficherListe(): void
     {
         $publications = (new PublicationRepository())->recuperer();
-        ControleurUtilisateur::afficherVue('vueGenerale.php', [
+        ControleurPublication::afficherVue('vueGenerale.php', [
             "publications" => $publications,
             "pagetitle" => "The Feed",
             "cheminVueBody" => "publication/liste.php"
