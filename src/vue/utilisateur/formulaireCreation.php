@@ -5,7 +5,7 @@
  */
 ?>
 <main>
-    <form action="controleurFrontal.php?controleur=utilisateur&action=creerDepuisFormulaire" id="form-access" class="center" method="post" enctype="multipart/form-data">
+    <form action="./inscription" id="form-access" class="center" method="post" enctype="multipart/form-data">
     <fieldset>
         <legend>Inscription</legend>
         <div class="access-container">

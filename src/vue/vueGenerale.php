@@ -20,21 +20,21 @@ use TheFeed\Lib\ConnexionUtilisateur;
 <body>
     <header>
         <div id="titre" class="center">
-            <a href="controleurFrontal.php?controleur=publication&action=afficherListe"><span>The Feed</span></a>
+            <a href="./publications"><span>The Feed</span></a>
             <nav>
-                <a href="controleurFrontal.php?controleur=publication&action=afficherListe">Accueil</a>
+                <a href="./publications">Accueil</a>
                 <?php
                 if (!ConnexionUtilisateur::estConnecte()) {
                 ?>
-                    <a href="controleurFrontal.php?action=afficherFormulaireCreation&controleur=utilisateur">Inscription</a>
-                    <a href="controleurFrontal.php?action=afficherFormulaireConnexion&controleur=utilisateur">Connexion</a>
+                    <a href="./inscription">Inscription</a>
+                    <a href="./connexion">Connexion</a>
                 <?php
                 } else {
                     $idUtilisateurURL = rawurlencode(ConnexionUtilisateur::getIdUtilisateurConnecte());
                 ?>
                     <a href="controleurFrontal.php?action=afficherPublications&controleur=utilisateur&idUtilisateur=<?= $idUtilisateurURL ?>">Ma
                         page</a>
-                    <a href="controleurFrontal.php?action=deconnecter&controleur=utilisateur">Déconnexion</a>
+                    <a href="./deconnexion">Déconnexion</a>
                 <?php } ?>
             </nav>
         </div>

@@ -12,7 +12,7 @@ use TheFeed\Modele\DataObject\Publication;
         <?php
         if (ConnexionUtilisateur::estConnecte()) {
         ?>
-            <form id="feedy-new" action="controleurFrontal.php?controleur=publication&action=creerDepuisFormulaire" method="post">
+            <form id="feedy-new" action="./publications" method="post">
                 <fieldset>
                     <legend>Nouveau feedy</legend>
                     <div>

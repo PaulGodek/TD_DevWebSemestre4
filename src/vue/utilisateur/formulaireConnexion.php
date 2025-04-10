@@ -1,5 +1,5 @@
 <main>
-    <form action="controleurFrontal.php?controleur=utilisateur&action=connecter" id="form-access" class="center" method="post">
+    <form action="./connexion" id="form-access" class="center" method="post">
     <fieldset>
         <legend>Connexion</legend>
         <div class="access-container">

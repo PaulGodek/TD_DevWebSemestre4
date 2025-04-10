@@ -18,26 +18,20 @@ class ControleurUtilisateur extends ControleurGenerique
         parent::afficherErreur($messageErreur, "utilisateur");
     }
 
-    public static function afficherPublications(): void
+    public static function afficherPublications($idUtilisateur): void
     {
-        if (isset($_REQUEST['idUtilisateur'])) {
-            $idUtilisateur = $_REQUEST['idUtilisateur'];
-            $utilisateur = (new UtilisateurRepository())->recupererParClePrimaire($idUtilisateur);
-            if ($utilisateur === null) {
-                MessageFlash::ajouter("error", "Login inconnu.");
-                ControleurUtilisateur::rediriger("publication", "afficherListe");
-            } else {
-                $loginHTML = htmlspecialchars($utilisateur->getLogin());
-                $publications = (new PublicationRepository())->recupererParAuteur($idUtilisateur);
-                ControleurUtilisateur::afficherVue('vueGenerale.php', [
-                    "publications" => $publications,
-                    "pagetitle" => "Page de $loginHTML",
-                    "cheminVueBody" => "utilisateur/page_perso.php"
-                ]);
-            }
-        } else {
-            MessageFlash::ajouter("error", "Login manquant.");
+        $utilisateur = (new UtilisateurRepository())->recupererParClePrimaire($idUtilisateur);
+        if ($utilisateur === null) {
+            MessageFlash::ajouter("error", "Login inconnu.");
             ControleurUtilisateur::rediriger("publication", "afficherListe");
+        } else {
+            $loginHTML = htmlspecialchars($utilisateur->getLogin());
+            $publications = (new PublicationRepository())->recupererParAuteur($idUtilisateur);
+            ControleurUtilisateur::afficherVue('vueGenerale.php', [
+                "publications" => $publications,
+                "pagetitle" => "Page de $loginHTML",
+                "cheminVueBody" => "utilisateur/page_perso.php"
+            ]);
         }
     }
 

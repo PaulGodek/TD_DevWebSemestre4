@@ -3,5 +3,9 @@
     "psr-4": {
       "TheFeed\\": "src"
     }
+  },
+  "require": {
+    "symfony/http-foundation": "^7.2",
+    "symfony/routing": "^7.2"
   }
 }
