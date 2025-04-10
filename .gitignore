@@ -1,3 +1,5 @@
 /.idea/
 /.vscode/
 ressources/img/utilisateurs/
+/vendor/
+composer.lock

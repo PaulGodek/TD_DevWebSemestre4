@@ -6,13 +6,13 @@ use PDO;
 
 class ConfigurationBDDMySQL implements ConfigurationBDDInterface
 {
-    private string $login = "";
-    private string $motDePasse = "";
+    private string $login = "godekp";
+    private string $motDePasse = "100793528EF";
 
     /** À l'IUT, vous avez une base de données nommée comme votre login
      * @var string
      */
-    private string $nomBDD = "";
+    private string $nomBDD = "godekp";
     private string $hostname = "webinfo.iutmontp.univ-montp2.fr";
 
 

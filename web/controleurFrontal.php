@@ -3,16 +3,7 @@
 ////////////////////
 // Initialisation //
 ////////////////////
-use TheFeed\Lib\Psr4AutoloaderClass;
-
-require_once __DIR__ . '/../src/Lib/Psr4AutoloaderClass.php';
-
-
-// initialisation en désactivant l'affichage de débogage
-$chargeurDeClasse = new Psr4AutoloaderClass(false);
-$chargeurDeClasse->register();
-// enregistrement d'une association "espace de nom" → "dossier"
-$chargeurDeClasse->addNamespace('TheFeed', __DIR__ . '/../src');
+require_once __DIR__ . '/../vendor/autoload.php';
 
 
 /////////////
