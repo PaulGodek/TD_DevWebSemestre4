@@ -3,9 +3,15 @@
  * @var string $login
  * @var string $adresseMail
  */
+
+use Symfony\Component\Routing\Generator\UrlGenerator;
+use TheFeed\Lib\Conteneur;
+
+/** @var UrlGenerator $generateurUrl */
+$generateurUrl = Conteneur::recupererService("generateurUrl");
 ?>
 <main>
-    <form action="./inscription" id="form-access" class="center" method="post" enctype="multipart/form-data">
+    <form action="<?= $generateurUrl->generate("inscription_POST") ?>" id="form-access" class="center" method="post" enctype="multipart/form-data">
     <fieldset>
         <legend>Inscription</legend>
         <div class="access-container">

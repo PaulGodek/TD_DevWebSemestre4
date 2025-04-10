@@ -3,10 +3,16 @@
 namespace TheFeed\Controleur;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\UrlHelper;
+use Symfony\Component\Routing\Generator\UrlGenerator;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
+use Symfony\Component\HttpKernel\Controller\ArgumentResolver;
+use Symfony\Component\HttpKernel\Controller\ControllerResolver;
+use TheFeed\Lib\Conteneur;
 
 class RouteurURL
 {
@@ -15,6 +21,7 @@ class RouteurURL
         $requete = Request::createFromGlobals();
 
         $routes = new RouteCollection();
+
 
         // ---------------------
         //       ROUTE GET
@@ -39,7 +46,7 @@ class RouteurURL
             "_controller" => "\TheFeed\Controleur\ControleurUtilisateur::deconnecter",
         ]);
         $route->setMethods(["GET"]);
-        $routes->add("deconnecter_GET", $route);
+        $routes->add("deconnexion_GET", $route);
 
         // Route inscription GET
         $route = new Route("/inscription", [
@@ -99,8 +106,20 @@ class RouteurURL
         $associateurUrl = new UrlMatcher($routes, $contexteRequete);
         $donneesRoute = $associateurUrl->match($requete->getPathInfo());
 
-        var_dump($donneesRoute);
+        $requete->attributes->add($donneesRoute);
 
-        call_user_func($donneesRoute["_controller"]);
+        $resolveurDeControleur = new ControllerResolver();
+        $controleur = $resolveurDeControleur->getController($requete);
+
+        $resolveurDArguments = new ArgumentResolver();
+        $arguments = $resolveurDArguments->getArguments($requete, $controleur);
+
+        $generateurUrl = new UrlGenerator($routes, $contexteRequete);
+        $assistantUrl = new UrlHelper(new RequestStack(), $contexteRequete);
+
+        Conteneur::ajouterService("generateurUrl", $generateurUrl);
+        Conteneur::ajouterService("assistantUrl", $assistantUrl);
+
+        call_user_func_array($controleur, $arguments);
     }
 }

@@ -1,5 +1,13 @@
+<?php
+
+use Symfony\Component\Routing\Generator\UrlGenerator;
+use TheFeed\Lib\Conteneur;
+
+/** @var UrlGenerator $generateurUrl */
+$generateurUrl = Conteneur::recupererService("generateurUrl");
+?>
 <main>
-    <form action="./connexion" id="form-access" class="center" method="post">
+    <form action="<?= $generateurUrl->generate("connexion_POST") ?>" id="form-access" class="center" method="post">
     <fieldset>
         <legend>Connexion</legend>
         <div class="access-container">
