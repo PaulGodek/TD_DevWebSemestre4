@@ -2,6 +2,8 @@
 
 namespace TheFeed\Controleur;
 
+use Symfony\Component\Routing\Generator\UrlGenerator;
+use TheFeed\Lib\Conteneur;
 use TheFeed\Lib\MessageFlash;
 
 class ControleurGenerique {
@@ -14,11 +16,12 @@ class ControleurGenerique {
     }
 
     // https://stackoverflow.com/questions/768431/how-do-i-make-a-redirect-in-php
-    protected static function rediriger(string $controleur = "", string $action = ""): void
+    protected static function rediriger(string $name, array $parameters = []): void
     {
-        $controleurURL = rawurlencode($controleur);
-        $actionURL = rawurlencode($action);
-        $url = "./controleurFrontal.php?controleur=$controleurURL&action=$actionURL";
+        $generateurUrl = Conteneur::recupererService("generateurUrl");
+
+        /** @var UrlGenerator $generateurUrl */
+        $url = $generateurUrl->generate($name, $parameters);
 
         // L'en-tête 'Location' permet d'effectuer une redirection
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Location

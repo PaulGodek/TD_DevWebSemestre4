@@ -28,23 +28,23 @@ class ControleurPublication extends ControleurGenerique
 
         if ($utilisateur == null) {
             MessageFlash::ajouter("error", "Il faut être connecté pour publier un feed");
-            ControleurPublication::rediriger('connecter');
+            ControleurPublication::rediriger('connexion_GET');
         }
         
         $message = $_POST['message'];
         if ($message == null || $message == "") {
             MessageFlash::ajouter("error", "Le message ne peut pas être vide!");
-            ControleurPublication::rediriger('publication', 'afficherListe');
+            ControleurPublication::rediriger("publications_GET");
         }
         if (strlen($message) > 250) {
             MessageFlash::ajouter("error", "Le message ne peut pas dépasser 250 caractères!");
-            ControleurPublication::rediriger('publication', 'afficherListe');
+            ControleurPublication::rediriger('publications_GET');
         }
 
         $publication = Publication::construire($message, $utilisateur);
         (new PublicationRepository())->ajouter($publication);
 
-        ControleurPublication::rediriger('publication', 'afficherListe');
+        ControleurPublication::rediriger("publications_GET");
     }
 
 
