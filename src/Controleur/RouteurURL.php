@@ -120,6 +120,7 @@ class RouteurURL
         Conteneur::ajouterService("generateurUrl", $generateurUrl);
         Conteneur::ajouterService("assistantUrl", $assistantUrl);
 
-        call_user_func_array($controleur, $arguments);
+        $response = call_user_func_array($controleur, $arguments);
+        $response->send();
     }
 }

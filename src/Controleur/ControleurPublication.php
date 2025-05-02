@@ -2,6 +2,7 @@
 
 namespace TheFeed\Controleur;
 
+use Symfony\Component\HttpFoundation\Response;
 use TheFeed\Lib\ConnexionUtilisateur;
 use TheFeed\Lib\MessageFlash;
 use TheFeed\Modele\DataObject\Publication;
@@ -11,17 +12,17 @@ use TheFeed\Modele\Repository\UtilisateurRepository;
 class ControleurPublication extends ControleurGenerique
 {
 
-    public static function afficherListe(): void
+    public static function afficherListe(): Response
     {
         $publications = (new PublicationRepository())->recuperer();
-        ControleurPublication::afficherVue('vueGenerale.php', [
+        return ControleurPublication::afficherVue('vueGenerale.php', [
             "publications" => $publications,
             "pagetitle" => "The Feed",
             "cheminVueBody" => "publication/liste.php"
         ]);
     }
 
-    public static function creerDepuisFormulaire(): void
+    public static function creerDepuisFormulaire(): Response
     {
         $idUtilisateurConnecte = ConnexionUtilisateur::getIdUtilisateurConnecte();
         $utilisateur = (new UtilisateurRepository())->recupererParClePrimaire($idUtilisateurConnecte);
@@ -44,7 +45,7 @@ class ControleurPublication extends ControleurGenerique
         $publication = Publication::construire($message, $utilisateur);
         (new PublicationRepository())->ajouter($publication);
 
-        ControleurPublication::rediriger("publications_GET");
+        return ControleurPublication::rediriger("publications_GET");
     }
 
 
