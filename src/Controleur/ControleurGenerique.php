@@ -31,19 +31,16 @@ class ControleurGenerique {
         return new RedirectResponse($url);
     }
 
-    public static function afficherErreur($messageErreur = "", $controleur = ""): Response
+    public static function afficherErreur($messageErreur = "", $statusCode = 400): Response
     {
-        $messageErreurVue = "Problème";
-        if ($controleur !== "")
-            $messageErreurVue .= " avec le contrôleur $controleur";
-        if ($messageErreur !== "")
-            $messageErreurVue .= " : $messageErreur";
-
-        return ControleurGenerique::afficherVue('vueGenerale.php', [
+        $reponse = ControleurGenerique::afficherVue('vueGenerale.php', [
             "pagetitle" => "Problème",
             "cheminVueBody" => "erreur.php",
-            "errorMessage" => $messageErreurVue
+            "errorMessage" => $messageErreur
         ]);
+
+        $reponse->setStatusCode($statusCode);
+        return $reponse;
     }
 
 }

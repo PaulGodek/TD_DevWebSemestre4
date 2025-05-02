@@ -5,6 +5,9 @@ namespace TheFeed\Controleur;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\UrlHelper;
+use Symfony\Component\Routing\Exception\MethodNotAllowedException;
+use Symfony\Component\Routing\Exception\NoConfigurationException;
+use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 use Symfony\Component\Routing\Generator\UrlGenerator;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
@@ -103,24 +106,33 @@ class RouteurURL
 
         $contexteRequete = (new RequestContext())->fromRequest($requete);
 
-        $associateurUrl = new UrlMatcher($routes, $contexteRequete);
-        $donneesRoute = $associateurUrl->match($requete->getPathInfo());
-
-        $requete->attributes->add($donneesRoute);
-
-        $resolveurDeControleur = new ControllerResolver();
-        $controleur = $resolveurDeControleur->getController($requete);
-
-        $resolveurDArguments = new ArgumentResolver();
-        $arguments = $resolveurDArguments->getArguments($requete, $controleur);
-
         $generateurUrl = new UrlGenerator($routes, $contexteRequete);
         $assistantUrl = new UrlHelper(new RequestStack(), $contexteRequete);
 
         Conteneur::ajouterService("generateurUrl", $generateurUrl);
         Conteneur::ajouterService("assistantUrl", $assistantUrl);
 
-        $response = call_user_func_array($controleur, $arguments);
-        $response->send();
+        try {
+            $associateurUrl = new UrlMatcher($routes, $contexteRequete);
+            $donneesRoute = $associateurUrl->match($requete->getPathInfo());
+
+            $requete->attributes->add($donneesRoute);
+
+            $resolveurDeControleur = new ControllerResolver();
+            $controleur = $resolveurDeControleur->getController($requete);
+
+            $resolveurDArguments = new ArgumentResolver();
+            $arguments = $resolveurDArguments->getArguments($requete, $controleur);
+
+            $reponse = call_user_func_array($controleur, $arguments);
+        } catch (MethodNotAllowedException $exception) {
+            $reponse = ControleurGenerique::afficherErreur($exception->getMessage(), 403);
+        } catch (NoConfigurationException|ResourceNotFoundException $exception) {
+            $reponse = ControleurGenerique::afficherErreur($exception->getMessage(), 404);
+        } catch (\Exception $exception) {
+            $reponse = ControleurGenerique::afficherErreur($exception->getMessage());
+        }
+
+        $reponse->send();
     }
 }
