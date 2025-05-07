@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <title>{% block page_title %}The Feed{% endblock %}</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="{{ asset("../ressources/css/styles.css") }}">
+</head>
+<body>
+<header>
+    <div id="titre" class="center">
+        <a href="{{ route("publications_GET") }}"><span>The Feed</span></a>
+        <nav>
+            <a href="{{ route("publications_GET") }}">Accueil</a>
+            {% if estConnecte %}
+            <a href="{{ route("publicationsUtilisateur_GET", {"idUtilisateur" : estConnecte}) }}">Ma page</a>
+            <a href="{{ route("deconnexion_GET") }}">Déconnexion</a>
+            {% else %}
+            <a href="{{ route("inscription_GET") }}">Inscription</a>
+            <a href="{{ route("connexion_GET") }}">Connexion</a>
+            {% endif %}
+        </nav>
+    </div>
+</header>
+<div id="flashes-container">
+    {% for type in ['success', 'error'] %}
+        {% for message in messagesFlash.lireMessages(type) %}
+            <span class="flashes flashes-{{ type }}">{{ message }}</span>
+        {% endfor %}
+    {% endfor %}
+</div>
+{% block page_content %}{% endblock %}
+</body>
+</html>

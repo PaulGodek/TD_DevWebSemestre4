@@ -8,42 +8,29 @@ use TheFeed\Lib\MessageFlash;
 use TheFeed\Modele\DataObject\Publication;
 use TheFeed\Modele\Repository\PublicationRepository;
 use TheFeed\Modele\Repository\UtilisateurRepository;
+use TheFeed\Service\Exception\ServiceException;
+use TheFeed\Service\PublicationService;
 
 class ControleurPublication extends ControleurGenerique
 {
 
     public static function afficherListe(): Response
     {
-        $publications = (new PublicationRepository())->recuperer();
-        return ControleurPublication::afficherVue('vueGenerale.php', [
-            "publications" => $publications,
-            "pagetitle" => "The Feed",
-            "cheminVueBody" => "publication/liste.php"
+        $publications = (new PublicationService())->recupererPublications();
+        return ControleurPublication::afficherTwig('publication/feed.html.twig', [
+            "publications" => $publications
         ]);
     }
 
     public static function creerDepuisFormulaire(): Response
     {
         $idUtilisateurConnecte = ConnexionUtilisateur::getIdUtilisateurConnecte();
-        $utilisateur = (new UtilisateurRepository())->recupererParClePrimaire($idUtilisateurConnecte);
-
-        if ($utilisateur == null) {
-            MessageFlash::ajouter("error", "Il faut être connecté pour publier un feed");
-            ControleurPublication::rediriger('connexion_GET');
-        }
-        
         $message = $_POST['message'];
-        if ($message == null || $message == "") {
-            MessageFlash::ajouter("error", "Le message ne peut pas être vide!");
-            ControleurPublication::rediriger("publications_GET");
+        try {
+            (new PublicationService())->creerPublication($idUtilisateurConnecte, $message);
+        } catch (ServiceException $e) {
+            MessageFlash::ajouter("error", $e->getMessage());
         }
-        if (strlen($message) > 250) {
-            MessageFlash::ajouter("error", "Le message ne peut pas dépasser 250 caractères!");
-            ControleurPublication::rediriger('publications_GET');
-        }
-
-        $publication = Publication::construire($message, $utilisateur);
-        (new PublicationRepository())->ajouter($publication);
 
         return ControleurPublication::rediriger("publications_GET");
     }

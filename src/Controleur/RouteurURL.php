@@ -15,7 +15,12 @@ use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\HttpKernel\Controller\ArgumentResolver;
 use Symfony\Component\HttpKernel\Controller\ControllerResolver;
+use TheFeed\Lib\ConnexionUtilisateur;
 use TheFeed\Lib\Conteneur;
+use TheFeed\Lib\MessageFlash;
+use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
+use Twig\TwigFunction;
 
 class RouteurURL
 {
@@ -111,6 +116,23 @@ class RouteurURL
 
         Conteneur::ajouterService("generateurUrl", $generateurUrl);
         Conteneur::ajouterService("assistantUrl", $assistantUrl);
+
+        $twigLoader = new FilesystemLoader(__DIR__ . '/../vue/');
+        $twig = new Environment(
+            $twigLoader,
+            [
+                'autoescape' => 'html',
+                'strict_variables' => true
+            ]
+        );
+        Conteneur::ajouterService("twig", $twig);
+
+        $twig->addFunction(new TwigFunction("route", $generateurUrl->generate(...)));
+        $twig->addFunction(new TwigFunction("asset", $assistantUrl->getAbsoluteUrl(...)));
+
+        $twig->addGlobal("estConnecte", ConnexionUtilisateur::estConnecte() ? ConnexionUtilisateur::getIdUtilisateurConnecte() : null);
+
+        $twig->addGlobal('messagesFlash', new MessageFlash());
 
         try {
             $associateurUrl = new UrlMatcher($routes, $contexteRequete);

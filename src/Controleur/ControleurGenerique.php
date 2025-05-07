@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGenerator;
 use TheFeed\Lib\Conteneur;
 use TheFeed\Lib\MessageFlash;
+use Twig\Environment;
 
 class ControleurGenerique {
 
@@ -17,6 +18,14 @@ class ControleurGenerique {
         ob_start();
         require __DIR__ . "/../vue/$cheminVue";
         $corpsReponse = ob_get_clean();
+        return new Response($corpsReponse);
+    }
+
+    protected static function afficherTwig(string $cheminVue, array $parametres = []): Response
+    {
+        /** @var Environment $twig */
+        $twig = Conteneur::recupererService("twig");
+        $corpsReponse = $twig->render($cheminVue, $parametres);
         return new Response($corpsReponse);
     }
 
@@ -33,9 +42,7 @@ class ControleurGenerique {
 
     public static function afficherErreur($messageErreur = "", $statusCode = 400): Response
     {
-        $reponse = ControleurGenerique::afficherVue('vueGenerale.php', [
-            "pagetitle" => "Problème",
-            "cheminVueBody" => "erreur.php",
+        $reponse = ControleurGenerique::afficherTwig('erreur.html.twig', [
             "errorMessage" => $messageErreur
         ]);
 

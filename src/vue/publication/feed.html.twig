@@ -1,0 +1,43 @@
+{% extends "base.html.twig" %}
+
+{% block page_title %}The Feed{% endblock %}
+
+{% block page_content %}
+    <main id="the-feed-main">
+        <div id="feed">
+            {% if estConnecte %}
+            <form id="feedy-new" action="{{ route("publications_POST") }}" method="post">
+                <fieldset>
+                    <legend>Nouveau feedy</legend>
+                    <div>
+                           <textarea required id="message" minlength="1" maxlength="250" name="message"
+                                     placeholder="Qu'avez-vous en tête?"></textarea>
+                    </div>
+                    <div>
+                        <input id="feedy-new-submit" type="submit" value="Feeder!">
+                    </div>
+                </fieldset>
+            </form>
+            {% endif %}
+            {% for p in publications %}
+            <div class="feedy">
+                <div class="feedy-header">
+                    <a href="{{ route("publicationsUtilisateur_GET", {"idUtilisateur" : p.auteur.idUtilisateur}) }}">
+                        <img class="avatar"
+                             src="{{ asset("../ressources/img/utilisateurs/"~p.auteur.nomPhotoDeProfil) }}"
+                             alt="avatar de l'utilisateur">
+                    </a>
+                    <div class="feedy-info">
+                        <span>{{ p.auteur.login }}</span>
+                        <span> - </span>
+                        <span>{{ p.date|date('d F Y') }}</span>
+                        <p>{{ p.message }}</p>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <p id="no-publications" class="center">Pas de publications pour le moment!</p>
+            {% endfor %}
+        </div>
+    </main>
+{% endblock %}
