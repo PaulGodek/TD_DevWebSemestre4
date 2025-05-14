@@ -7,32 +7,37 @@ use Symfony\Component\Routing\Attribute\Route;
 use TheFeed\Lib\ConnexionUtilisateur;
 use TheFeed\Lib\MessageFlash;
 use TheFeed\Service\Exception\ServiceException;
-use TheFeed\Service\PublicationService;
+use TheFeed\Service\PublicationServiceInterface;
 
 class ControleurPublication extends ControleurGenerique
 {
+    private PublicationServiceInterface $publicationService;
+
+    public function __construct(PublicationServiceInterface $publicationService) {
+        $this->publicationService = $publicationService;
+    }
 
     #[Route(path: '/publications', name:'publications_GET', methods:["GET"])]
-    public static function afficherListe(): Response
+    public function afficherListe(): Response
     {
-        $publications = (new PublicationService())->recupererPublications();
-        return ControleurPublication::afficherTwig('publication/feed.html.twig', [
+        $publications = $this->publicationService->recupererPublications();
+        return $this->afficherTwig('publication/feed.html.twig', [
             "publications" => $publications
         ]);
     }
 
     #[Route(path: '/publications', name:'publications_POST', methods:["POST"])]
-    public static function creerDepuisFormulaire(): Response
+    public function creerDepuisFormulaire(): Response
     {
         $idUtilisateurConnecte = ConnexionUtilisateur::getIdUtilisateurConnecte();
         $message = $_POST['message'];
         try {
-            (new PublicationService())->creerPublication($idUtilisateurConnecte, $message);
+            $this->publicationService->creerPublication($idUtilisateurConnecte, $message);
         } catch (ServiceException $e) {
             MessageFlash::ajouter("error", $e->getMessage());
         }
 
-        return ControleurPublication::rediriger("publications_GET");
+        return $this->rediriger("publications_GET");
     }
 
 

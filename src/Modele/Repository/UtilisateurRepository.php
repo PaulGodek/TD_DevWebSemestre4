@@ -5,15 +5,20 @@ namespace TheFeed\Modele\Repository;
 use TheFeed\Modele\DataObject\Utilisateur;
 use PDOStatement;
 
-class UtilisateurRepository
+class UtilisateurRepository implements UtilisateurRepositoryInterface
 {
+    private ConnexionBaseDeDonnees $connexionBaseDeDonnee;
+
+    public function __construct(ConnexionBaseDeDonnees $connexionBaseDeDonnee) {
+        $this->connexionBaseDeDonnee = $connexionBaseDeDonnee;
+    }
 
     /**
      * @return Utilisateur[]
      */
     public function recuperer(): array
     {
-        $statement = ConnexionBaseDeDonnees::getPdo()->prepare("SELECT * FROM utilisateurs");
+        $statement = $this->connexionBaseDeDonnee->getPdo()->prepare("SELECT * FROM utilisateurs");
         $statement->execute();
 
         $utilisateurs = [];
@@ -36,7 +41,7 @@ class UtilisateurRepository
         $values = [
             "idUtilisateur" => $id,
         ];
-        $statement = ConnexionBaseDeDonnees::getPdo()->prepare("SELECT * FROM utilisateurs WHERE idUtilisateur = :idUtilisateur");
+        $statement = $this->connexionBaseDeDonnee->getPdo()->prepare("SELECT * FROM utilisateurs WHERE idUtilisateur = :idUtilisateur");
         return $this->extraireUtilisateur($statement, $values);
     }
 
@@ -45,7 +50,7 @@ class UtilisateurRepository
         $values = [
             "login" => $login,
         ];
-        $statement = ConnexionBaseDeDonnees::getPdo()->prepare("SELECT * FROM utilisateurs WHERE login = :login");
+        $statement = $this->connexionBaseDeDonnee->getPdo()->prepare("SELECT * FROM utilisateurs WHERE login = :login");
         return $this->extraireUtilisateur($statement, $values);
     }
 
@@ -54,7 +59,7 @@ class UtilisateurRepository
         $values = [
             "email" => $email,
         ];
-        $statement = ConnexionBaseDeDonnees::getPdo()->prepare("SELECT * FROM utilisateurs WHERE email = :email");
+        $statement = $this->connexionBaseDeDonnee->getPdo()->prepare("SELECT * FROM utilisateurs WHERE email = :email");
         return $this->extraireUtilisateur($statement, $values);
     }
 
@@ -66,7 +71,7 @@ class UtilisateurRepository
             "email" => $entite->getEmail(),
             "nomPhotoDeProfil" => $entite->getNomPhotoDeProfil()
         ];
-        $pdo = ConnexionBaseDeDonnees::getPdo();
+        $pdo = $this->connexionBaseDeDonnee->getPdo();
         $statement = $pdo->prepare("INSERT INTO utilisateurs (login, mdpHache, email, nomPhotoDeProfil) VALUES(:login, :mdpHache, :email, :nomPhotoDeProfil);");
         $statement->execute($values);
         return $pdo->lastInsertId();
@@ -81,7 +86,7 @@ class UtilisateurRepository
             "email" => $entite->getEmail(),
             "nomPhotoDeProfil" => $entite->getNomPhotoDeProfil()
         ];
-        $statement = ConnexionBaseDeDonnees::getPdo()->prepare("UPDATE utilisateurs SET login = :login, mdpHache = :mdpHache, email = :email, nomPhotoDeProfil = :nomPhotoDeProfil WHERE idUtilisateur = :idUtilisateur;");
+        $statement = $this->connexionBaseDeDonnee->getPdo()->prepare("UPDATE utilisateurs SET login = :login, mdpHache = :mdpHache, email = :email, nomPhotoDeProfil = :nomPhotoDeProfil WHERE idUtilisateur = :idUtilisateur;");
         $statement->execute($values);
     }
 
@@ -90,7 +95,7 @@ class UtilisateurRepository
         $values = [
             "idUtilisateur" => $entite->getIdUtilisateur(),
         ];
-        $statement = ConnexionBaseDeDonnees::getPdo()->prepare("DELETE FROM utilisateurs WHERE idUtilisateur = :idUtilisateur");
+        $statement = $this->connexionBaseDeDonnee->getPdo()->prepare("DELETE FROM utilisateurs WHERE idUtilisateur = :idUtilisateur");
         $statement->execute($values);
     }
 

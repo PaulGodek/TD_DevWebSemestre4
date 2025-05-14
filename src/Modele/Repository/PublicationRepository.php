@@ -6,15 +6,21 @@ use TheFeed\Modele\DataObject\Publication;
 use TheFeed\Modele\DataObject\Utilisateur;
 use DateTime;
 
-class PublicationRepository
+class PublicationRepository implements PublicationRepositoryInterface
 {
+    private ConnexionBaseDeDonnees $connexionBaseDeDonnee;
+
+    public function __construct(ConnexionBaseDeDonnees $connexionBaseDeDonnee) {
+        $this->connexionBaseDeDonnee = $connexionBaseDeDonnee;
+    }
+
     /**
      * @return Publication[]
      * @throws \Exception
      */
     public function recuperer(): array
     {
-        $statement = ConnexionBaseDeDonnees::getPdo()->prepare("SELECT idPublication, message, date, idUtilisateur, login, nomPhotoDeProfil
+        $statement = $this->connexionBaseDeDonnee->getPdo()->prepare("SELECT idPublication, message, date, idUtilisateur, login, nomPhotoDeProfil
                                                 FROM publications p
                                                 JOIN utilisateurs u on p.idAuteur = u.idUtilisateur
                                                 ORDER BY date DESC");
@@ -48,7 +54,7 @@ class PublicationRepository
         $values = [
             "idAuteur" => $idUtilisateur,
         ];
-        $statement = ConnexionBaseDeDonnees::getPdo()->prepare("SELECT idPublication, message, date, idUtilisateur, login, nomPhotoDeProfil
+        $statement = $this->connexionBaseDeDonnee->getPdo()->prepare("SELECT idPublication, message, date, idUtilisateur, login, nomPhotoDeProfil
                                                 FROM publications p
                                                 JOIN utilisateurs u on p.idAuteur = u.idUtilisateur
                                                 WHERE idAuteur = :idAuteur
@@ -80,7 +86,7 @@ class PublicationRepository
             "date" => $publication->getDate()->format('Y-m-d H:i:s'),
             "idAuteur" => $publication->getAuteur()->getIdUtilisateur()
         ];
-        $pdo = ConnexionBaseDeDonnees::getPdo();
+        $pdo = $this->connexionBaseDeDonnee->getPdo();
         $statement = $pdo->prepare("INSERT INTO publications (message, date, idAuteur) VALUES(:message, :date, :idAuteur);");
         $statement->execute($values);
         return $pdo->lastInsertId();
@@ -91,7 +97,7 @@ class PublicationRepository
         $values = [
             "idPublication" => $id,
         ];
-        $statement = ConnexionBaseDeDonnees::getPdo()->prepare("SELECT idPublication, message, date, idUtilisateur, login, nomPhotoDeProfil
+        $statement = $this->connexionBaseDeDonnee->getPdo()->prepare("SELECT idPublication, message, date, idUtilisateur, login, nomPhotoDeProfil
                                                 FROM publications p
                                                 JOIN utilisateurs u on p.idAuteur = u.idUtilisateur
                                                 WHERE idPublication = :idPublication");
@@ -118,7 +124,7 @@ class PublicationRepository
             "idPublication" => $publication->getIdPublication(),
             "message" => $publication->getMessage(),
         ];
-        $statement = ConnexionBaseDeDonnees::getPdo()->prepare("UPDATE publications SET message = :message WHERE idPublication = :idPublication;");
+        $statement = $this->connexionBaseDeDonnee->getPdo()->prepare("UPDATE publications SET message = :message WHERE idPublication = :idPublication;");
         $statement->execute($values);
     }
 
@@ -127,7 +133,7 @@ class PublicationRepository
         $values = [
             "idPublication" => $publication->getIdPublication(),
         ];
-        $statement = ConnexionBaseDeDonnees::getPdo()->prepare("DELETE FROM publications WHERE idPublication = :idPublication");
+        $statement = $this->connexionBaseDeDonnee->getPdo()->prepare("DELETE FROM publications WHERE idPublication = :idPublication");
         $statement->execute($values);
     }
 

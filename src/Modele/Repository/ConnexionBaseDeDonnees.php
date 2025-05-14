@@ -2,24 +2,21 @@
 
 namespace TheFeed\Modele\Repository;
 
+use TheFeed\Configuration\ConfigurationBDDInterface;
 use TheFeed\Configuration\ConfigurationBDDMySQL;
 use PDO;
 
 class ConnexionBaseDeDonnees
 {
-    private static ?ConnexionBaseDeDonnees $instance = null;
-
     private PDO $pdo;
 
-    public static function getPdo(): PDO
+    public function getPdo(): PDO
     {
-        return ConnexionBaseDeDonnees::getInstance()->pdo;
+        return $this->pdo;
     }
 
-    private function __construct()
+    public function __construct(ConfigurationBDDInterface $configurationBDD)
     {
-        $configurationBDD = new ConfigurationBDDMySQL();
-
         // Connexion à la base de données
         $this->pdo = new PDO(
             $configurationBDD->getDSN(),
@@ -30,12 +27,5 @@ class ConnexionBaseDeDonnees
 
         // On active le mode d'affichage des erreurs, et le lancement d'exception en cas d'erreur
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    }
-
-    private static function getInstance(): ConnexionBaseDeDonnees
-    {
-        if (is_null(ConnexionBaseDeDonnees::$instance))
-            ConnexionBaseDeDonnees::$instance = new ConnexionBaseDeDonnees();
-        return ConnexionBaseDeDonnees::$instance;
     }
 }

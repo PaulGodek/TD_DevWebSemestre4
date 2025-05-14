@@ -4,24 +4,35 @@ namespace TheFeed\Service;
 
 use Exception;
 use TheFeed\Modele\DataObject\Publication;
-use TheFeed\Modele\Repository\PublicationRepository;
-use TheFeed\Modele\Repository\UtilisateurRepository;
+use TheFeed\Modele\Repository\PublicationRepositoryInterface;
+use TheFeed\Modele\Repository\UtilisateurRepositoryInterface;
 use TheFeed\Service\Exception\ServiceException;
 
-class PublicationService
+class PublicationService implements PublicationServiceInterface
 {
+    private UtilisateurRepositoryInterface $utilisateurRepository;
+    private PublicationRepositoryInterface $publicationRepository;
+
+    public function __construct(
+        UtilisateurRepositoryInterface $uri,
+        PublicationRepositoryInterface $pri
+    ) {
+        $this->utilisateurRepository = $uri;
+        $this->publicationRepository = $pri;
+    }
+
     /**
      * @throws Exception
      */
     public function recupererPublications(): array {
-        return (new PublicationRepository())->recuperer();
+        return $this->publicationRepository->recuperer();
     }
 
     /**
      * @throws ServiceException
      */
     public function creerPublication($idUtilisateur, $message) : void {
-        $utilisateur = (new UtilisateurRepository())->recupererParClePrimaire($idUtilisateur);
+        $utilisateur = $this->utilisateurRepository->recupererParClePrimaire($idUtilisateur);
 
         if ($utilisateur == null) {
             throw new ServiceException("Il faut être connecté pour publier un feed.");
@@ -35,11 +46,11 @@ class PublicationService
         }
 
         $publication = Publication::construire($message, $utilisateur);
-        (new PublicationRepository())->ajouter($publication);
+        $this->publicationRepository->ajouter($publication);
     }
 
     public function recupererPublicationsUtilisateur($idUtilisateur): array
     {
-        return (new PublicationRepository())->recupererParAuteur($idUtilisateur);
+        return $this->publicationRepository->recupererParAuteur($idUtilisateur);
     }
 }

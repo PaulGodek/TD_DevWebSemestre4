@@ -5,11 +5,17 @@ namespace TheFeed\Service;
 use TheFeed\Lib\ConnexionUtilisateur;
 use TheFeed\Lib\MotDePasse;
 use TheFeed\Modele\DataObject\Utilisateur;
-use TheFeed\Modele\Repository\UtilisateurRepository;
+use TheFeed\Modele\Repository\UtilisateurRepositoryInterface;
 use TheFeed\Service\Exception\ServiceException;
 
-class UtilisateurService
+class UtilisateurService implements UtilisateurServiceInterface
 {
+    private UtilisateurRepositoryInterface $utilisateurRepository;
+
+    public function __construct(UtilisateurRepositoryInterface $uri) {
+        $this->utilisateurRepository = $uri;
+    }
+
     /**
      * @throws ServiceException
      */
@@ -29,13 +35,12 @@ class UtilisateurService
                 throw new ServiceException("L'adresse mail est incorrecte!");
             }
 
-            $utilisateurRepository = new UtilisateurRepository();
-            $utilisateur = $utilisateurRepository->recupererParLogin($login);
+            $utilisateur = $this->utilisateurRepository->recupererParLogin($login);
             if ($utilisateur != null) {
                 throw new ServiceException("Ce login est déjà pris!");
             }
 
-            $utilisateur = $utilisateurRepository->recupererParEmail($email);
+            $utilisateur = $this->utilisateurRepository->recupererParEmail($email);
             if ($utilisateur != null) {
                 throw new ServiceException("Un compte est déjà enregistré avec cette adresse mail!");
             }
@@ -59,7 +64,7 @@ class UtilisateurService
             move_uploaded_file($source, $destination);
 
             $utilisateur = Utilisateur::construire($login, $mdpHache, $email, $nomFichierPhoto);
-            $utilisateurRepository->ajouter($utilisateur);
+            $this->utilisateurRepository->ajouter($utilisateur);
         } else {
             throw new ServiceException("Login, nom, prenom ou mot de passe manquant.");
         }
@@ -70,7 +75,7 @@ class UtilisateurService
      */
     public function recupererUtilisateurParId($idUtilisateur, $autoriserNull = true): ?Utilisateur
     {
-        $utilisateur = (new UtilisateurRepository())->recupererParClePrimaire($idUtilisateur);
+        $utilisateur = $this->utilisateurRepository->recupererParClePrimaire($idUtilisateur);
         if (!$autoriserNull && is_null($utilisateur)) {
             throw new ServiceException("Cet utilisateur n'existe pas !");
         }
@@ -84,9 +89,8 @@ class UtilisateurService
     {
 
         if (!is_null($login) && !is_null($motDePasse)) {
-            $utilisateurRepository = new UtilisateurRepository();
             /** @var Utilisateur $utilisateur */
-            $utilisateur = $utilisateurRepository->recupererParLogin($login);
+            $utilisateur = $this->utilisateurRepository->recupererParLogin($login);
 
             if (is_null($utilisateur)) {
                 throw new ServiceException("Login inconnu.");

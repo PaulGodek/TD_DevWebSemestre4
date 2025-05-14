@@ -5,12 +5,11 @@ namespace TheFeed\Controleur;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\UrlHelper;
+use Symfony\Component\HttpKernel\Controller\ContainerControllerResolver;
 use Symfony\Component\Routing\Exception\MethodNotAllowedException;
 use Symfony\Component\Routing\Exception\NoConfigurationException;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 use Symfony\Component\Routing\Generator\UrlGenerator;
-use Symfony\Component\Routing\Route;
-use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\HttpKernel\Controller\ArgumentResolver;
@@ -24,10 +23,45 @@ use TheFeed\Lib\MessageFlash;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 use Twig\TwigFunction;
+use TheFeed\Controleur\ControleurPublication;
+use TheFeed\Controleur\ControleurUtilisateur;
+use TheFeed\Modele\Repository\ConnexionBaseDeDonnees;
+use TheFeed\Modele\Repository\PublicationRepository;
+use TheFeed\Modele\Repository\UtilisateurRepository;
+use TheFeed\Service\PublicationService;
+use TheFeed\Service\UtilisateurService;
+use TheFeed\Configuration\ConfigurationBDDMySQL;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Reference;
 
 class RouteurURL
 {
     public static function traiterRequete(): void {
+
+        $conteneur = new ContainerBuilder();
+
+        $conteneur->register(ConfigurationBDDMySQL::class, ConfigurationBDDMySQL::class);
+
+        $connexionBaseReference = $conteneur->register(ConnexionBaseDeDonnees::class, ConnexionBaseDeDonnees::class);
+        $connexionBaseReference->setArguments([new Reference(ConfigurationBDDMySQL::class)]);
+
+        $publicationsRepositoryReference = $conteneur->register(PublicationRepository::class, PublicationRepository::class);
+        $publicationsRepositoryReference->setArguments([new Reference(ConnexionBaseDeDonnees::class)]);
+
+        $utilisateurRepositoryReference = $conteneur->register(UtilisateurRepository::class, UtilisateurRepository::class);
+        $utilisateurRepositoryReference->setArguments([new Reference(ConnexionBaseDeDonnees::class)]);
+
+        $publicationServiceReference = $conteneur->register(PublicationService::class, PublicationService::class);
+        $publicationServiceReference->setArguments([new Reference(UtilisateurRepository::class), new Reference(PublicationRepository::class)]);
+
+        $publicationControleurReference = $conteneur->register(ControleurPublication::class, ControleurPublication::class);
+        $publicationControleurReference->setArguments([new Reference(PublicationService::class)]);
+
+        $utilisateurServiceReference = $conteneur->register(UtilisateurService::class, UtilisateurService::class);
+        $utilisateurServiceReference->setArguments([new Reference(UtilisateurRepository::class)]);
+
+        $publicationControleurReference = $conteneur->register(ControleurUtilisateur::class, ControleurUtilisateur::class);
+        $publicationControleurReference->setArguments([new Reference(UtilisateurService::class), new Reference(PublicationService::class)]);
 
         $requete = Request::createFromGlobals();
 
@@ -66,7 +100,7 @@ class RouteurURL
 
             $requete->attributes->add($donneesRoute);
 
-            $resolveurDeControleur = new ControllerResolver();
+            $resolveurDeControleur = new ContainerControllerResolver($conteneur);
             $controleur = $resolveurDeControleur->getController($requete);
 
             $resolveurDArguments = new ArgumentResolver();
@@ -74,11 +108,11 @@ class RouteurURL
 
             $reponse = call_user_func_array($controleur, $arguments);
         } catch (MethodNotAllowedException $exception) {
-            $reponse = ControleurGenerique::afficherErreur($exception->getMessage(), 403);
+            $reponse = (new ControleurGenerique())->afficherErreur($exception->getMessage(), 403);
         } catch (NoConfigurationException|ResourceNotFoundException $exception) {
-            $reponse = ControleurGenerique::afficherErreur($exception->getMessage(), 404);
+            $reponse = (new ControleurGenerique())->afficherErreur($exception->getMessage(), 404);
         } catch (\Exception $exception) {
-            $reponse = ControleurGenerique::afficherErreur($exception->getMessage());
+            $reponse = (new ControleurGenerique())->afficherErreur($exception->getMessage());
         }
 
         $reponse->send();

@@ -7,44 +7,51 @@ use Symfony\Component\Routing\Attribute\Route;
 use TheFeed\Configuration\Configuration;
 use TheFeed\Lib\MessageFlash;
 use TheFeed\Service\Exception\ServiceException;
-use TheFeed\Service\PublicationService;
-use TheFeed\Service\UtilisateurService;
+use TheFeed\Service\PublicationServiceInterface;
+use TheFeed\Service\UtilisateurServiceInterface;
 
 class ControleurUtilisateur extends ControleurGenerique
 {
+    private UtilisateurServiceInterface $utilisateurService;
+    private PublicationServiceInterface $publicationService;
 
-    public static function afficherErreur($messageErreur = "", $statusCode = 400): Response
+    public function __construct(UtilisateurServiceInterface $usi, PublicationServiceInterface $psi) {
+        $this->utilisateurService = $usi;
+        $this->publicationService = $psi;
+    }
+
+    public function afficherErreur($messageErreur = "", $statusCode = 400): Response
     {
-        return parent::afficherErreur($messageErreur, $statusCode);
+        return (new parent())->afficherErreur($messageErreur, $statusCode);
     }
 
     #[Route(path: '/utilisateurs/{idUtilisateur}/publications', name:'publicationsUtilisateur_GET', methods:["GET"])]
-    public static function afficherPublications($idUtilisateur): Response
+    public function afficherPublications($idUtilisateur): Response
     {
         $publications = [];
         try {
-            $utilisateur = (new UtilisateurService())->recupererUtilisateurParId($idUtilisateur, false);
-            $publications = (new PublicationService())->recupererPublicationsUtilisateur($idUtilisateur);
+            $utilisateur = $this->utilisateurService->recupererUtilisateurParId($idUtilisateur, false);
+            $publications = $this->publicationService->recupererPublicationsUtilisateur($idUtilisateur);
         } catch (ServiceException $e) {
             MessageFlash::ajouter("error", $e->getMessage());
-            return ControleurUtilisateur::rediriger("publications_GET");
+            return $this->rediriger("publications_GET");
         }
-        return ControleurUtilisateur::afficherTwig('publication/page_perso.html.twig', [
+        return $this->afficherTwig('publication/page_perso.html.twig', [
             "publications" => $publications,
             "idUtilisateur" => $utilisateur->getLogin()
         ]);
     }
 
     #[Route(path: '/inscription', name:'inscription_GET', methods:["GET"])]
-    public static function afficherFormulaireCreation(): Response
+    public function afficherFormulaireCreation(): Response
     {
-        return ControleurUtilisateur::afficherTwig('utilisateur/inscription.html.twig', [
+        return $this->afficherTwig('utilisateur/inscription.html.twig', [
             "method" => Configuration::getDebug() ? "get" : "post"
         ]);
     }
 
     #[Route(path: '/inscription', name:'inscription_POST', methods:["POST"])]
-    public static function creerDepuisFormulaire(): Response
+    public function creerDepuisFormulaire(): Response
     {
         $login = $_POST['login'] ?? null;
         $motDePasse = $_POST['mot-de-passe'] ?? null;
@@ -52,51 +59,51 @@ class ControleurUtilisateur extends ControleurGenerique
         $donneesPhotoDeProfil = $_FILES['donnees-photo-de-profil'] ?? null;
 
         try {
-            (new UtilisateurService())->creerUtilisateur($login, $motDePasse, $email, $donneesPhotoDeProfil);
+            $this->utilisateurService->creerUtilisateur($login, $motDePasse, $email, $donneesPhotoDeProfil);
         } catch (ServiceException $e) {
             MessageFlash::ajouter("error", $e->getMessage());
-            return ControleurUtilisateur::rediriger("inscription_GET");
+            return $this->rediriger("inscription_GET");
         }
 
         MessageFlash::ajouter("success", "L'utilisateur a bien été créé !");
-        return ControleurUtilisateur::rediriger("publications_GET");
+        return $this->rediriger("publications_GET");
     }
 
     #[Route(path: '/connexion', name:'connexion_GET', methods:["GET"])]
-    public static function afficherFormulaireConnexion(): Response
+    public function afficherFormulaireConnexion(): Response
     {
-        return ControleurUtilisateur::afficherTwig('utilisateur/connexion.html.twig', [
+        return $this->afficherTwig('utilisateur/connexion.html.twig', [
             "method" => Configuration::getDebug() ? "get" : "post"
         ]);
     }
 
     #[Route(path: '/connexion', name:'connexion_POST', methods:["POST"])]
-    public static function connecter(): Response
+    public function connecter(): Response
     {
         $login = $_POST["login"] ?? null;
         $motDePasse = $_POST["mot-de-passe"] ?? null;
 
         try {
-            (new UtilisateurService())->connecterUtilisateur($login, $motDePasse);
+            $this->utilisateurService->connecterUtilisateur($login, $motDePasse);
         } catch (ServiceException $e) {
             MessageFlash::ajouter("error", $e->getMessage());
-            return ControleurUtilisateur::rediriger("connexion_GET");
+            return $this->rediriger("connexion_GET");
         }
 
         MessageFlash::ajouter("success", "Connexion effectuée.");
-        return ControleurUtilisateur::rediriger("publications_GET");
+        return $this->rediriger("publications_GET");
     }
 
     #[Route(path: '/deconnexion', name:'deconnexion_GET', methods:["GET"])]
-    public static function deconnecter(): Response
+    public function deconnecter(): Response
     {
         try {
-            (new UtilisateurService())->deconnecter();
+            $this->utilisateurService->deconnecter();
         } catch (ServiceException $e) {
             MessageFlash::ajouter("error", $e->getMessage());
-            return ControleurUtilisateur::rediriger("publications_GET");
+            return $this->rediriger("publications_GET");
         }
         MessageFlash::ajouter("success", "L'utilisateur a bien été déconnecté.");
-        return ControleurUtilisateur::rediriger("publications_GET");
+        return $this->rediriger("publications_GET");
     }
 }

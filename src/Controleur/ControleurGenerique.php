@@ -11,7 +11,7 @@ use Twig\Environment;
 
 class ControleurGenerique {
 
-    protected static function afficherVue(string $cheminVue, array $parametres = []): Response
+    protected function afficherVue(string $cheminVue, array $parametres = []): Response
     {
         extract($parametres);
         $messagesFlash = MessageFlash::lireTousMessages();
@@ -21,7 +21,7 @@ class ControleurGenerique {
         return new Response($corpsReponse);
     }
 
-    protected static function afficherTwig(string $cheminVue, array $parametres = []): Response
+    protected function afficherTwig(string $cheminVue, array $parametres = []): Response
     {
         /** @var Environment $twig */
         $twig = Conteneur::recupererService("twig");
@@ -30,7 +30,7 @@ class ControleurGenerique {
     }
 
     // https://stackoverflow.com/questions/768431/how-do-i-make-a-redirect-in-php
-    protected static function rediriger(string $name, array $parameters = []): RedirectResponse
+    protected function rediriger(string $name, array $parameters = []): RedirectResponse
     {
         $generateurUrl = Conteneur::recupererService("generateurUrl");
 
@@ -40,9 +40,9 @@ class ControleurGenerique {
         return new RedirectResponse($url);
     }
 
-    public static function afficherErreur($messageErreur = "", $statusCode = 400): Response
+    public function afficherErreur($messageErreur = "", $statusCode = 400): Response
     {
-        $reponse = ControleurGenerique::afficherTwig('erreur.html.twig', [
+        $reponse = $this->afficherTwig('erreur.html.twig', [
             "errorMessage" => $messageErreur
         ]);
 
