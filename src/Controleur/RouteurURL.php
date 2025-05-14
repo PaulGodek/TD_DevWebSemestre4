@@ -15,6 +15,9 @@ use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\HttpKernel\Controller\ArgumentResolver;
 use Symfony\Component\HttpKernel\Controller\ControllerResolver;
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\Routing\Loader\AttributeDirectoryLoader;
+use TheFeed\Lib\AttributeRouteControllerLoader;
 use TheFeed\Lib\ConnexionUtilisateur;
 use TheFeed\Lib\Conteneur;
 use TheFeed\Lib\MessageFlash;
@@ -28,86 +31,9 @@ class RouteurURL
 
         $requete = Request::createFromGlobals();
 
-        $routes = new RouteCollection();
-
-
-        // ---------------------
-        //       ROUTE GET
-        // ---------------------
-
-        // Route afficherPublications GET
-        $route = new Route("/publications", [
-            "_controller" => "\TheFeed\Controleur\ControleurPublication::afficherListe",
-        ]);
-        $route->setMethods(["GET"]);
-        $routes->add("publications_GET", $route);
-
-        // Route afficherFormulaireConnexion GET
-        $route = new Route("/connexion", [
-            "_controller" => "\TheFeed\Controleur\ControleurUtilisateur::afficherFormulaireConnexion",
-        ]);
-        $route->setMethods(["GET"]);
-        $routes->add("connexion_GET", $route);
-
-        // Route deconnection GET
-        $route = new Route("/deconnexion", [
-            "_controller" => "\TheFeed\Controleur\ControleurUtilisateur::deconnecter",
-        ]);
-        $route->setMethods(["GET"]);
-        $routes->add("deconnexion_GET", $route);
-
-        // Route inscription GET
-        $route = new Route("/inscription", [
-            "_controller" => "\TheFeed\Controleur\ControleurUtilisateur::afficherFormulaireCreation",
-        ]);
-        $route->setMethods(["GET"]);
-        $routes->add("inscription_GET", $route);
-
-        // Route publicationsUtilisateur GET
-        $route = new Route("/utilisateurs/{idUtilisateur}/publications", [
-            "_controller" => "\TheFeed\Controleur\ControleurUtilisateur::afficherPublications",
-        ]);
-        $route->setMethods(["GET"]);
-        $routes->add("publicationsUtilisateur_GET", $route);
-
-
-        // ----------------------
-        //       ROUTE POST
-        // ----------------------
-
-        // Route connexion POST
-        $route = new Route("/connexion", [
-            "_controller" => "\TheFeed\Controleur\ControleurUtilisateur::connecter",
-        ]);
-        $route->setMethods(["POST"]);
-        $routes->add("connexion_POST", $route);
-
-        // Route inscription POST
-        $route = new Route("/inscription", [
-            "_controller" => "\TheFeed\Controleur\ControleurUtilisateur::creerDepuisFormulaire",
-        ]);
-        $route->setMethods(["POST"]);
-        $routes->add("inscription_POST", $route);
-
-        // Route publications POST
-        $route = new Route("/publications", [
-            "_controller" => "\TheFeed\Controleur\ControleurPublication::creerDepuisFormulaire",
-        ]);
-        $route->setMethods(["POST"]);
-        $routes->add("publications_POST", $route);
-
-
-
-
-
-        // Route TEMPORARY
-        $route = new Route("/", [
-            "_controller" => "\TheFeed\Controleur\ControleurPublication::afficherListe",
-        ]);
-        $route->setMethods(["GET"]);
-        $routes->add("home_TEMP", $route);
-
-
+        $fileLocator = new FileLocator(__DIR__);
+        $attrClassLoader = new AttributeRouteControllerLoader();
+        $routes = (new AttributeDirectoryLoader($fileLocator, $attrClassLoader))->load(__DIR__);
 
         $contexteRequete = (new RequestContext())->fromRequest($requete);
 

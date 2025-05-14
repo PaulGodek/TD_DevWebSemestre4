@@ -3,6 +3,7 @@
 namespace TheFeed\Controleur;
 
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
 use TheFeed\Configuration\Configuration;
 use TheFeed\Lib\MessageFlash;
 use TheFeed\Service\Exception\ServiceException;
@@ -17,6 +18,7 @@ class ControleurUtilisateur extends ControleurGenerique
         return parent::afficherErreur($messageErreur, $statusCode);
     }
 
+    #[Route(path: '/utilisateurs/{idUtilisateur}/publications', name:'publicationsUtilisateur_GET', methods:["GET"])]
     public static function afficherPublications($idUtilisateur): Response
     {
         $publications = [];
@@ -33,6 +35,7 @@ class ControleurUtilisateur extends ControleurGenerique
         ]);
     }
 
+    #[Route(path: '/inscription', name:'inscription_GET', methods:["GET"])]
     public static function afficherFormulaireCreation(): Response
     {
         return ControleurUtilisateur::afficherTwig('utilisateur/inscription.html.twig', [
@@ -40,6 +43,7 @@ class ControleurUtilisateur extends ControleurGenerique
         ]);
     }
 
+    #[Route(path: '/inscription', name:'inscription_POST', methods:["POST"])]
     public static function creerDepuisFormulaire(): Response
     {
         $login = $_POST['login'] ?? null;
@@ -58,6 +62,7 @@ class ControleurUtilisateur extends ControleurGenerique
         return ControleurUtilisateur::rediriger("publications_GET");
     }
 
+    #[Route(path: '/connexion', name:'connexion_GET', methods:["GET"])]
     public static function afficherFormulaireConnexion(): Response
     {
         return ControleurUtilisateur::afficherTwig('utilisateur/connexion.html.twig', [
@@ -65,6 +70,7 @@ class ControleurUtilisateur extends ControleurGenerique
         ]);
     }
 
+    #[Route(path: '/connexion', name:'connexion_POST', methods:["POST"])]
     public static function connecter(): Response
     {
         $login = $_POST["login"] ?? null;
@@ -81,6 +87,7 @@ class ControleurUtilisateur extends ControleurGenerique
         return ControleurUtilisateur::rediriger("publications_GET");
     }
 
+    #[Route(path: '/deconnexion', name:'deconnexion_GET', methods:["GET"])]
     public static function deconnecter(): Response
     {
         try {
