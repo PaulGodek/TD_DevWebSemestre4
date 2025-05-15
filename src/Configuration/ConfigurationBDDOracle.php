@@ -2,8 +2,6 @@
 
 namespace TheFeed\Configuration;
 
-use PDO;
-
 class ConfigurationBDDOracle implements ConfigurationBDDInterface
 {
     private string $login = "";

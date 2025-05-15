@@ -3,7 +3,6 @@
 namespace TheFeed\Modele\Repository;
 
 use TheFeed\Configuration\ConfigurationBDDInterface;
-use TheFeed\Configuration\ConfigurationBDDMySQL;
 use PDO;
 
 class ConnexionBaseDeDonnees

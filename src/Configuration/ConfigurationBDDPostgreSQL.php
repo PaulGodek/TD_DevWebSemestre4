@@ -2,8 +2,6 @@
 
 namespace TheFeed\Configuration;
 
-use PDO;
-
 class ConfigurationBDDPostgreSQL implements ConfigurationBDDInterface
 {
     private string $login = "";

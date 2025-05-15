@@ -2,8 +2,6 @@
 
 namespace Tests\Unit;
 
-use Couchbase\User;
-use DateTime;
 use PHPUnit\Framework\TestCase;
 use TheFeed\Modele\DataObject\Publication;
 use TheFeed\Modele\DataObject\Utilisateur;

@@ -5,7 +5,6 @@ namespace TheFeed\Controleur;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGenerator;
-use TheFeed\Lib\Conteneur;
 use TheFeed\Lib\MessageFlash;
 use Twig\Environment;
 use Symfony\Component\DependencyInjection\ContainerInterface;

@@ -2,9 +2,7 @@
 
 namespace TheFeed\Lib;
 
-use TheFeed\Modele\DataObject\Utilisateur;
 use TheFeed\Modele\HTTP\Session;
-use TheFeed\Modele\Repository\UtilisateurRepository;
 
 class ConnexionUtilisateur
 {
