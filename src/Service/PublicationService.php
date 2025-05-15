@@ -37,7 +37,6 @@ class PublicationService implements PublicationServiceInterface
         if ($utilisateur == null) {
             throw new ServiceException("Il faut être connecté pour publier un feed.");
         }
-
         if ($message == null || $message == "") {
             throw new ServiceException("Le message ne peut pas être vide !");
         }

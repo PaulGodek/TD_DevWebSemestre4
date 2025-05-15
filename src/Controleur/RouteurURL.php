@@ -4,6 +4,7 @@ namespace TheFeed\Controleur;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\UrlHelper;
 use Symfony\Component\HttpKernel\Controller\ContainerControllerResolver;
 use Symfony\Component\Routing\Exception\MethodNotAllowedException;
@@ -24,10 +25,9 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class RouteurURL
 {
-    public static function traiterRequete(): void {
+    public static function traiterRequete(Request $requete): Response {
 
         // Récupération de la requête
-        $requete = Request::createFromGlobals();
         $contexteRequete = (new RequestContext())->fromRequest($requete);
 
         // Création du conteneur et récupéraion de ses informations
@@ -80,6 +80,6 @@ class RouteurURL
             $reponse = $conteneur->get('TheFeed\Controleur\ControleurGenerique')->afficherErreur($exception->getMessage());
         }
 
-        $reponse->send();
+        return $reponse;
     }
 }
