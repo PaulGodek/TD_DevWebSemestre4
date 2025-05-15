@@ -8,13 +8,14 @@ use TheFeed\Lib\ConnexionUtilisateur;
 use TheFeed\Lib\MessageFlash;
 use TheFeed\Service\Exception\ServiceException;
 use TheFeed\Service\PublicationServiceInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class ControleurPublication extends ControleurGenerique
 {
-    private PublicationServiceInterface $publicationService;
 
-    public function __construct(PublicationServiceInterface $publicationService) {
-        $this->publicationService = $publicationService;
+    public function __construct(ContainerInterface $container, private PublicationServiceInterface $publicationService)
+    {
+        parent::__construct($container);
     }
 
     #[Route(path: '/publications', name:'publications_GET', methods:["GET"])]

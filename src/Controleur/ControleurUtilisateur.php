@@ -2,6 +2,7 @@
 
 namespace TheFeed\Controleur;
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use TheFeed\Configuration\Configuration;
@@ -12,17 +13,9 @@ use TheFeed\Service\UtilisateurServiceInterface;
 
 class ControleurUtilisateur extends ControleurGenerique
 {
-    private UtilisateurServiceInterface $utilisateurService;
-    private PublicationServiceInterface $publicationService;
 
-    public function __construct(UtilisateurServiceInterface $usi, PublicationServiceInterface $psi) {
-        $this->utilisateurService = $usi;
-        $this->publicationService = $psi;
-    }
-
-    public function afficherErreur($messageErreur = "", $statusCode = 400): Response
-    {
-        return (new parent())->afficherErreur($messageErreur, $statusCode);
+    public function __construct(ContainerInterface $container, private UtilisateurServiceInterface $utilisateurService, private PublicationServiceInterface $publicationService) {
+        parent::__construct($container);
     }
 
     #[Route(path: '/utilisateurs/{idUtilisateur}/publications', name:'publicationsUtilisateur_GET', methods:["GET"])]

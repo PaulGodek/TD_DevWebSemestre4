@@ -8,8 +8,13 @@ use Symfony\Component\Routing\Generator\UrlGenerator;
 use TheFeed\Lib\Conteneur;
 use TheFeed\Lib\MessageFlash;
 use Twig\Environment;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class ControleurGenerique {
+
+
+    public function __construct(private ContainerInterface $container)
+    {}
 
     protected function afficherVue(string $cheminVue, array $parametres = []): Response
     {
@@ -24,7 +29,7 @@ class ControleurGenerique {
     protected function afficherTwig(string $cheminVue, array $parametres = []): Response
     {
         /** @var Environment $twig */
-        $twig = Conteneur::recupererService("twig");
+        $twig = $this->container->get("Twig\Environment");
         $corpsReponse = $twig->render($cheminVue, $parametres);
         return new Response($corpsReponse);
     }
@@ -32,7 +37,7 @@ class ControleurGenerique {
     // https://stackoverflow.com/questions/768431/how-do-i-make-a-redirect-in-php
     protected function rediriger(string $name, array $parameters = []): RedirectResponse
     {
-        $generateurUrl = Conteneur::recupererService("generateurUrl");
+        $generateurUrl = $this->container->get("Symfony\Component\Routing\Generator\UrlGenerator");
 
         /** @var UrlGenerator $generateurUrl */
         $url = $generateurUrl->generate($name, $parameters);

@@ -1,0 +1,54 @@
+parameters:
+
+services:
+
+  TheFeed\Configuration\ConfigurationBDDMySQL:
+    class: TheFeed\Configuration\ConfigurationBDDMySQL
+
+  TheFeed\Modele\Repository\ConnexionBaseDeDonnees:
+    class: TheFeed\Modele\Repository\ConnexionBaseDeDonnees
+    arguments: ['@TheFeed\Configuration\ConfigurationBDDMySQL']
+
+  #Repositories
+  TheFeed\Modele\Repository\PublicationRepository:
+    class: TheFeed\Modele\Repository\PublicationRepository
+    arguments: ['@TheFeed\Modele\Repository\ConnexionBaseDeDonnees']
+
+  TheFeed\Modele\Repository\UtilisateurRepository:
+    class: TheFeed\Modele\Repository\UtilisateurRepository
+    arguments: ['@TheFeed\Modele\Repository\ConnexionBaseDeDonnees']
+
+  #Services
+  TheFeed\Service\PublicationService:
+    class: TheFeed\Service\PublicationService
+    arguments: ['@TheFeed\Modele\Repository\UtilisateurRepository', '@TheFeed\Modele\Repository\PublicationRepository']
+
+  TheFeed\Service\UtilisateurService:
+    class: TheFeed\Service\UtilisateurService
+    arguments: ['@TheFeed\Modele\Repository\UtilisateurRepository']
+
+  #Controleurs
+  TheFeed\Controleur\ControleurGenerique:
+    class: TheFeed\Controleur\ControleurGenerique
+    arguments: ['@service_container']
+
+  TheFeed\Controleur\ControleurPublication:
+    class: TheFeed\Controleur\ControleurPublication
+    arguments: ['@service_container', '@TheFeed\Service\PublicationService']
+
+  TheFeed\Controleur\ControleurUtilisateur:
+    class: TheFeed\Controleur\ControleurUtilisateur
+    arguments: ['@service_container', '@TheFeed\Service\UtilisateurService', '@TheFeed\Service\PublicationService']
+
+  #Twig
+  Twig\Loader\FilesystemLoader:
+    class: Twig\Loader\FilesystemLoader
+    arguments: [ '%project_root%/src/vue/' ]
+  Twig\Environment:
+    class: Twig\Environment
+    arguments:
+      $loader: '@Twig\Loader\FilesystemLoader'
+      $options:
+        autoescape: 'html'
+        strict_variables: true
+        debug: true

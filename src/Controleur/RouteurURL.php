@@ -13,85 +13,50 @@ use Symfony\Component\Routing\Generator\UrlGenerator;
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\HttpKernel\Controller\ArgumentResolver;
-use Symfony\Component\HttpKernel\Controller\ControllerResolver;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Routing\Loader\AttributeDirectoryLoader;
 use TheFeed\Lib\AttributeRouteControllerLoader;
 use TheFeed\Lib\ConnexionUtilisateur;
-use TheFeed\Lib\Conteneur;
 use TheFeed\Lib\MessageFlash;
-use Twig\Environment;
-use Twig\Loader\FilesystemLoader;
 use Twig\TwigFunction;
-use TheFeed\Controleur\ControleurPublication;
-use TheFeed\Controleur\ControleurUtilisateur;
-use TheFeed\Modele\Repository\ConnexionBaseDeDonnees;
-use TheFeed\Modele\Repository\PublicationRepository;
-use TheFeed\Modele\Repository\UtilisateurRepository;
-use TheFeed\Service\PublicationService;
-use TheFeed\Service\UtilisateurService;
-use TheFeed\Configuration\ConfigurationBDDMySQL;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Reference;
 
 class RouteurURL
 {
     public static function traiterRequete(): void {
 
+        // Récupération de la requête
+        $requete = Request::createFromGlobals();
+        $contexteRequete = (new RequestContext())->fromRequest($requete);
+
+        // Création du conteneur et récupéraion de ses informations
         $conteneur = new ContainerBuilder();
 
-        $conteneur->register(ConfigurationBDDMySQL::class, ConfigurationBDDMySQL::class);
+        $conteneur->setParameter('project_root', __DIR__.'/../..');
 
-        $connexionBaseReference = $conteneur->register(ConnexionBaseDeDonnees::class, ConnexionBaseDeDonnees::class);
-        $connexionBaseReference->setArguments([new Reference(ConfigurationBDDMySQL::class)]);
+        //On indique au FileLocator de chercher à partir du dossier de configuration
+        $loader = new YamlFileLoader($conteneur, new FileLocator(__DIR__."/../Configuration"));
+        //On remplit le conteneur avec les données fournies dans le fichier de configuration
+        $loader->load("conteneur.yml");
 
-        $publicationsRepositoryReference = $conteneur->register(PublicationRepository::class, PublicationRepository::class);
-        $publicationsRepositoryReference->setArguments([new Reference(ConnexionBaseDeDonnees::class)]);
-
-        $utilisateurRepositoryReference = $conteneur->register(UtilisateurRepository::class, UtilisateurRepository::class);
-        $utilisateurRepositoryReference->setArguments([new Reference(ConnexionBaseDeDonnees::class)]);
-
-        $publicationServiceReference = $conteneur->register(PublicationService::class, PublicationService::class);
-        $publicationServiceReference->setArguments([new Reference(UtilisateurRepository::class), new Reference(PublicationRepository::class)]);
-
-        $publicationControleurReference = $conteneur->register(ControleurPublication::class, ControleurPublication::class);
-        $publicationControleurReference->setArguments([new Reference(PublicationService::class)]);
-
-        $utilisateurServiceReference = $conteneur->register(UtilisateurService::class, UtilisateurService::class);
-        $utilisateurServiceReference->setArguments([new Reference(UtilisateurRepository::class)]);
-
-        $publicationControleurReference = $conteneur->register(ControleurUtilisateur::class, ControleurUtilisateur::class);
-        $publicationControleurReference->setArguments([new Reference(UtilisateurService::class), new Reference(PublicationService::class)]);
-
-        $requete = Request::createFromGlobals();
-
+        // Récupération des routes
         $fileLocator = new FileLocator(__DIR__);
         $attrClassLoader = new AttributeRouteControllerLoader();
         $routes = (new AttributeDirectoryLoader($fileLocator, $attrClassLoader))->load(__DIR__);
 
-        $contexteRequete = (new RequestContext())->fromRequest($requete);
-
+        // Création du générateur d'URL et ajout au conteneur
         $generateurUrl = new UrlGenerator($routes, $contexteRequete);
+        $conteneur->set(UrlGenerator::class, $generateurUrl);
+
         $assistantUrl = new UrlHelper(new RequestStack(), $contexteRequete);
 
-        Conteneur::ajouterService("generateurUrl", $generateurUrl);
-        Conteneur::ajouterService("assistantUrl", $assistantUrl);
-
-        $twigLoader = new FilesystemLoader(__DIR__ . '/../vue/');
-        $twig = new Environment(
-            $twigLoader,
-            [
-                'autoescape' => 'html',
-                'strict_variables' => true
-            ]
-        );
-        Conteneur::ajouterService("twig", $twig);
+        // Twig
+        $twig = $conteneur->get('Twig\Environment');
 
         $twig->addFunction(new TwigFunction("route", $generateurUrl->generate(...)));
         $twig->addFunction(new TwigFunction("asset", $assistantUrl->getAbsoluteUrl(...)));
-
         $twig->addGlobal("estConnecte", ConnexionUtilisateur::estConnecte() ? ConnexionUtilisateur::getIdUtilisateurConnecte() : null);
-
         $twig->addGlobal('messagesFlash', new MessageFlash());
 
         try {
@@ -108,11 +73,11 @@ class RouteurURL
 
             $reponse = call_user_func_array($controleur, $arguments);
         } catch (MethodNotAllowedException $exception) {
-            $reponse = (new ControleurGenerique())->afficherErreur($exception->getMessage(), 403);
+            $reponse = $conteneur->get('TheFeed\Controleur\ControleurGenerique')->afficherErreur($exception->getMessage(), 403);
         } catch (NoConfigurationException|ResourceNotFoundException $exception) {
-            $reponse = (new ControleurGenerique())->afficherErreur($exception->getMessage(), 404);
+            $reponse = $conteneur->get('TheFeed\Controleur\ControleurGenerique')->afficherErreur($exception->getMessage(), 404);
         } catch (\Exception $exception) {
-            $reponse = (new ControleurGenerique())->afficherErreur($exception->getMessage());
+            $reponse = $conteneur->get('TheFeed\Controleur\ControleurGenerique')->afficherErreur($exception->getMessage());
         }
 
         $reponse->send();
