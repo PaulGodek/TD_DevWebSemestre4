@@ -5,7 +5,7 @@ namespace TheFeed\Modele\Repository;
 use TheFeed\Configuration\ConfigurationBDDInterface;
 use PDO;
 
-class ConnexionBaseDeDonnees
+class ConnexionBaseDeDonnees implements ConnexionBaseDeDonneesInterface
 {
     private PDO $pdo;
 
