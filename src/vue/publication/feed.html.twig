@@ -32,6 +32,11 @@
                         <span> - </span>
                         <span>{{ p.date|date('d F Y') }}</span>
                         <p>{{ p.message }}</p>
+                        {% if estConnecte and estConnecte == p.auteur.idUtilisateur %}
+                            <button class="delete-feedy" data-id-publication="{{ p.idPublication }}">
+                                Supprimer
+                            </button>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -40,4 +45,19 @@
             {% endfor %}
         </div>
     </main>
+
+    <template id="new-feed">
+        <div class="feedy">
+            <div class="feedy-header">
+                <a id="feed-lien-auteur" href="">
+                    <img alt="profile picture" src="" class="avatar">
+                </a>
+                <div class="feedy-info">
+                    <span id="feed-login-utilisateur"></span><span> - </span><span id="feed-date-publication"></span>
+                    <p id="feed-message"></p>
+                    <button id="feed-bouton-suppression" class="delete-feedy" data-id-publication="">Supprimer</button>
+                </div>
+            </div>
+        </div>
+    </template>
 {% endblock %}

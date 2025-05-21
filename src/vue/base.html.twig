@@ -4,8 +4,15 @@
     <title>{% block page_title %}The Feed{% endblock %}</title>
     <meta charset="utf-8">
     <link rel="stylesheet" type="text/css" href="{{ asset("../ressources/css/styles.css") }}">
+    <script type="text/javascript" src="{{ asset("../ressources/js/main.js") }}" defer></script>
 </head>
 <body>
+<script type="text/javascript">
+    let siteBase = "{{ asset('.') }}";
+    let apiBase = siteBase+"/api/"
+    let pagePersoBase = siteBase+"/utilisateurs/";
+    let imgBase = "{{  asset("../ressources/img") }}";
+</script>
 <header>
     <div id="titre" class="center">
         <a href="{{ route("publications_GET") }}"><span>The Feed</span></a>

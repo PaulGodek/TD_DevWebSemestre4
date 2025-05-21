@@ -2,7 +2,9 @@
 
 namespace TheFeed\Modele\DataObject;
 
-class Utilisateur
+use JsonSerializable;
+
+class Utilisateur implements JsonSerializable
 {
 
 
@@ -78,5 +80,14 @@ class Utilisateur
     public function setNomPhotoDeProfil($nomPhotoDeProfil): void
     {
         $this->nomPhotoDeProfil = $nomPhotoDeProfil;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            "idUtilisateur" => $this->getIdUtilisateur(),
+            "login" => $this->getLogin(),
+            "nomPhotoDeProfil" => $this->getNomPhotoDeProfil()
+        ];
     }
 }

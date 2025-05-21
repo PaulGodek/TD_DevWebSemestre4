@@ -3,8 +3,9 @@
 namespace TheFeed\Modele\DataObject;
 
 use DateTime;
+use JsonSerializable;
 
-class Publication
+class Publication implements JsonSerializable
 {
 
     private int $idPublication;
@@ -62,4 +63,15 @@ class Publication
         $this->auteur = $auteur;
     }
 
+    public function jsonSerialize(): array
+    {
+        return [
+            "idPublication" => $this->getIdPublication(),
+            "message" => $this->getMessage(),
+            "date" => $this->getDate()->format('d F Y'),
+            "auteur" => [
+                "idUtilisateur" => $this->getAuteur()->getIdUtilisateur()
+            ]
+        ];
+    }
 }

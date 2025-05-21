@@ -2,6 +2,7 @@
 
 namespace TheFeed\Service;
 
+use Symfony\Component\HttpFoundation\Response;
 use TheFeed\Lib\ConnexionUtilisateur;
 use TheFeed\Lib\MotDePasse;
 use TheFeed\Modele\DataObject\Utilisateur;
@@ -77,7 +78,7 @@ class UtilisateurService implements UtilisateurServiceInterface
     {
         $utilisateur = $this->utilisateurRepository->recupererParClePrimaire($idUtilisateur);
         if (!$autoriserNull && is_null($utilisateur)) {
-            throw new ServiceException("Cet utilisateur n'existe pas !");
+            throw new ServiceException("Cet utilisateur n'existe pas !", Response::HTTP_NOT_FOUND);
         }
         return $utilisateur;
     }

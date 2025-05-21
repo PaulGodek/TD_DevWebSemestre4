@@ -27,6 +27,14 @@ services:
     class: TheFeed\Service\UtilisateurService
     arguments: ['@TheFeed\Modele\Repository\UtilisateurRepository']
 
+  TheFeed\Controleur\ControleurPublicationAPI:
+    class: TheFeed\Controleur\ControleurPublicationAPI
+    arguments: [ '@service_container', '@TheFeed\Service\PublicationService' ]
+
+  TheFeed\Controleur\ControleurUtilisateurAPI:
+    class: TheFeed\Controleur\ControleurUtilisateurAPI
+    arguments: [ '@service_container', '@TheFeed\Service\UtilisateurService' ]
+
   #Controleurs
   TheFeed\Controleur\ControleurGenerique:
     class: TheFeed\Controleur\ControleurGenerique
