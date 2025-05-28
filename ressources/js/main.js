@@ -77,8 +77,26 @@ async function soumettrePublication() {
         // (Hors TD) Il faudrait traiter l'erreur
         return;
     let publication = await response.json();
-    // Utilisateur par défaut en attendant la suite
-    let utilisateur = {nomPhotoDeProfil : "anonyme.jpg", login: "Inconnu"};
+
+    // Récupérer utilisateur
+    let URL2 = apiBase + "utilisateurs/" + publication.auteur.idUtilisateur;
+    let response2 = await fetch(URL2, {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-type': 'application/json; charset=UTF-8',
+        },
+    });
+    if (response2.status !== 201)
+        // (Hors TD) Il faudrait traiter l'erreur
+        return;
+    let utilisateur = await response.json();
+
+
+    // PAS FINITO
+
+
+
     let formElement = document.getElementById("feedy-new");
     formElement.insertAdjacentElement('afterend', templatePublication(publication, utilisateur));
 }
